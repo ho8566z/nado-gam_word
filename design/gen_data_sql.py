@@ -158,27 +158,46 @@ DESTINATIONS = [
 VVO_REASON = "전쟁·제재로 한국발 직항 운항 중단"
 
 # 항공사 코드: (한글명, 영문명, FSC/LCC)
-AIRLINES = {
-    "KE": ("대한항공", "Korean Air", "FSC"), "OZ": ("아시아나항공", "Asiana Airlines", "FSC"),
-    "BX": ("에어부산", "Air Busan", "LCC"), "7C": ("제주항공", "Jeju Air", "LCC"), "LJ": ("진에어", "Jin Air", "LCC"),
-    "AF": ("에어프랑스", "Air France", "FSC"), "LH": ("루프트한자", "Lufthansa", "FSC"),
-    "TK": ("터키항공", "Turkish Airlines", "FSC"), "AY": ("핀에어", "Finnair", "FSC"),
-    "EK": ("에미레이트항공", "Emirates", "FSC"), "QR": ("카타르항공", "Qatar Airways", "FSC"),
-    "TG": ("타이항공", "Thai Airways", "FSC"), "BR": ("에바항공", "EVA Air", "FSC"), "JL": ("일본항공", "Japan Airlines", "FSC"),
-    "CA": ("중국국제항공", "Air China", "FSC"), "MU": ("중국동방항공", "China Eastern Airlines", "FSC"),
-    "CX": ("캐세이퍼시픽", "Cathay Pacific", "FSC"), "DL": ("델타항공", "Delta Air Lines", "FSC"),
-    "UA": ("유나이티드항공", "United Airlines", "FSC"), "HA": ("하와이안항공", "Hawaiian Airlines", "FSC"),
-    "UO": ("홍콩익스프레스", "HK Express", "LCC"), "9C": ("춘추항공", "Spring Airlines", "LCC"),
-    "QF": ("콴타스항공", "Qantas", "FSC"), "SQ": ("싱가포르항공", "Singapore Airlines", "FSC"),
-    "AC": ("에어캐나다", "Air Canada", "FSC"), "ET": ("에티오피아항공", "Ethiopian Airlines", "FSC"),
-    # 11/19 여행지 50곳 확장
-    "KL": ("KLM", "KLM Royal Dutch Airlines", "FSC"), "OS": ("오스트리아항공", "Austrian Airlines", "FSC"),
-    "BA": ("영국항공", "British Airways", "FSC"), "TR": ("스쿠트", "Scoot", "LCC"),
-    "NX": ("에어마카오", "Air Macau", "FSC"), "CI": ("중화항공", "China Airlines", "FSC"),
-    "VN": ("베트남항공", "Vietnam Airlines", "FSC"), "VJ": ("비엣젯항공", "VietJet Air", "LCC"),
-    "GA": ("가루다인도네시아", "Garuda Indonesia", "FSC"), "MH": ("말레이시아항공", "Malaysia Airlines", "FSC"),
-    "D7": ("에어아시아엑스", "AirAsia X", "LCC"), "AM": ("아에로멕시코", "Aeromexico", "FSC"),
-    "TW": ("티웨이항공", "T'way Air", "LCC"),
+AIRLINES = {  # 모두 실제와 무관한 가상 항공사(이름·코드). 코드: (한글명, 영문명, FSC 일반 / LCC 저비용)
+    "MG": ("민국항공", "Minguk Air", "FSC"),
+    "AQ": ("아리아항공", "Aria Airlines", "FSC"),
+    "BD": ("에어바다", "Air Bada", "LCC"),
+    "HR": ("한라에어", "Halla Air", "LCC"),
+    "NU": ("에어누리", "Air Nuri", "LCC"),
+    "BS": ("푸른하늘항공", "Blue Sky Airlines", "LCC"),
+    "GL": ("에어갈리아", "Air Gallia", "FSC"),
+    "RH": ("라인에어", "Rhein Air", "FSC"),
+    "BP": ("보스포루스항공", "Bosphorus Airlines", "FSC"),
+    "LP": ("라플란드항공", "Lapland Air", "FSC"),
+    "OA": ("오아시스항공", "Oasis Airways", "FSC"),
+    "GF": ("걸프스타항공", "Gulfstar Airways", "FSC"),
+    "SM": ("시암항공", "Siam Airways", "FSC"),
+    "EB": ("에버블루항공", "Everblue Air", "FSC"),
+    "SK": ("사쿠라항공", "Sakura Airlines", "FSC"),
+    "DS": ("용성항공", "Dragonstar Air", "FSC"),
+    "AZ": ("청룡항공", "Azure Dragon Air", "FSC"),
+    "PC": ("태평양항공", "Pacific Crest Airways", "FSC"),
+    "AT": ("아틀라스항공", "Atlas Airlines", "FSC"),
+    "UW": ("유니온항공", "Union Airways", "FSC"),
+    "RI": ("무지개섬항공", "Rainbow Isles Air", "FSC"),
+    "HX": ("항구익스프레스", "Harbor Express", "LCC"),
+    "SB": ("봄바람항공", "Spring Breeze Air", "LCC"),
+    "SX": ("남십자성항공", "Southern Cross Airways", "FSC"),
+    "LC": ("라이언시티항공", "Lion City Airways", "FSC"),
+    "ML": ("메이플항공", "Maple Leaf Air", "FSC"),
+    "BN": ("블루나일항공", "Blue Nile Airlines", "FSC"),
+    "TL": ("튤립항공", "Tulip Airways", "FSC"),
+    "AP": ("알프스항공", "Alpine Airways", "FSC"),
+    "TH": ("템스항공", "Thames Airways", "FSC"),
+    "LT": ("라이트제트", "Lightjet", "LCC"),
+    "PL": ("주강항공", "Pearl River Air", "FSC"),
+    "FM": ("포모사항공", "Formosa Airlines", "FSC"),
+    "RR": ("홍강항공", "Red River Airlines", "FSC"),
+    "MJ": ("메콩제트", "Mekong Jet", "LCC"),
+    "NS": ("누사항공", "Nusa Airways", "FSC"),
+    "MA": ("물라카항공", "Malacca Airlines", "FSC"),
+    "BO": ("보르네오엑스", "Borneo X", "LCC"),
+    "ZT": ("아즈텍항공", "Aztec Airlines", "FSC"),
 }
 NAME_TO_CODE = {v[0]: k for k, v in AIRLINES.items()}
 
@@ -275,7 +294,7 @@ def change_fee_base(total_min):
 
 
 def aircraft(total_min, direct, code):
-    if code == "EK":
+    if code == "OA":
         return "A380-800"
     if AIRLINES[code][2] == "LCC":
         return "B737-800" if total_min <= 180 else "A321neo"
@@ -283,7 +302,7 @@ def aircraft(total_min, direct, code):
         return "A321neo"
     if direct and total_min <= 360:
         return "A330-300"
-    return "B777-300ER" if code in ("KE", "AF", "LH", "TK", "QR", "AC", "UA", "DL") else "A350-900"
+    return "B777-300ER" if code in ("MG", "GL", "RH", "BP", "GF", "ML", "UW", "AT") else "A350-900"
 
 
 def main():
