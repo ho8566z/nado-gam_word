@@ -268,6 +268,25 @@ POPUPS = [
 ]
 
 
+# 고객문의 더미 (분류, 제목, 내용, 답변(없으면 None), 작성 시각, 답변 시각). 모두 가상이다.
+INQUIRIES = [
+    ("FLIGHT", "위탁 수하물 규정이 궁금해요",
+     "민국항공 MG901 일반석에서 위탁 수하물을 몇 kg까지 부칠 수 있나요? 추가 요금이 있는지도 알려 주세요.",
+     "안녕하세요, 나도 감입니다. MG901 일반석은 위탁 수하물 23kg 1개까지 무료입니다. 초과분은 kg당 공항 요금표 기준으로 부과돼요. 항공편 상세의 '수하물' 항목에서도 확인하실 수 있습니다.",
+     "2026-11-18 10:20:00", "2026-11-18 15:40:00"),
+    ("TOUR", "투어 일정을 바꿀 수 있나요?",
+     "예약 후에 투어 출발일을 하루 늦추고 싶어요. 변경 수수료가 있을까요?",
+     None, "2026-11-19 09:05:00", None),
+    ("PAYMENT", "결제 영수증은 어디서 받나요?",
+     "결제를 마쳤는데 영수증 발급 메뉴를 못 찾겠어요.",
+     "결제 내역은 '내 예약'의 예약 상세에서 확인하실 수 있어요. 별도의 영수증이 필요하시면 예약 번호와 함께 다시 문의해 주세요.",
+     "2026-11-19 13:30:00", "2026-11-19 17:10:00"),
+    ("HOTEL", "호텔 체크인 시간이 궁금해요",
+     "도쿄 호텔에 밤 11시쯤 도착할 것 같은데 늦은 체크인도 가능한가요?",
+     None, "2026-11-20 08:45:00", None),
+]
+
+
 def q(v):
     if v is None:
         return "NULL"
@@ -443,6 +462,14 @@ def main():
     for title, body, url, start, end, active in POPUPS:
         w("INSERT INTO popup_event (title, body, qr_target_url, start_at, end_at, is_active, created_by) VALUES "
           f"({q(title)}, {q(body)}, {q(url)}, '{start}', '{end}', {'TRUE' if active else 'FALSE'}, 1);")
+    w("")
+
+    w("-- [U] 고객문의 4개: 사용자 user 의 문의. 답변 완료 2개, 접수 2개 (관리자 admin 이 답변)")
+    for cat, title, content, answer, created, answered in INQUIRIES:
+        status = "ANSWERED" if answer else "RECEIVED"
+        w("INSERT INTO support_inquiry (member_id, category, title, content, status, answer_content, answered_by, created_at, answered_at) VALUES "
+          f"(1, {q(cat)}, {q(title)}, {q(content)}, '{status}', {q(answer)}, {1 if answer else 'NULL'}, '{created}', "
+          f"{q(answered) if answered else 'NULL'});")
     w("")
 
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
