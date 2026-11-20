@@ -9,6 +9,7 @@ import math
 import os
 import random
 
+import expand_data
 import tour_data
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -101,6 +102,7 @@ AIRPORTS = [
     ("MEL", "멜버른공항", "Melbourne Airport", "멜버른", "AU", -37.6690, 144.8410, "Australia/Melbourne", False),
     ("GUM", "괌국제공항", "Antonio B. Won Pat International Airport", "괌", "GU", 13.4834, 144.7960, "Pacific/Guam", False),
 ]
+AIRPORTS += expand_data.AIRPORTS_NEW   # 11/21 여행지 100곳 확장
 AP = {a[0]: a for a in AIRPORTS}
 
 # (한글명, 영문명, 국가, 대표공항, 위도, 경도, 상태, 불가사유, 소개)
@@ -157,6 +159,8 @@ DESTINATIONS = [
     ("멜버른", "Melbourne", "AU", "MEL", -37.8136, 144.9631, "카페와 골목 예술, 타임아웃 2026 세계 1위 도시"),
     ("괌", "Guam", "GU", "GUM", 13.4443, 144.7937, "가깝고 한적한 태평양의 휴양 섬"),
 ]
+DESTINATIONS += expand_data.DESTINATIONS_NEW   # 11/21 여행지 100곳 확장 (51~100번)
+COUNTRIES += expand_data.COUNTRIES_NEW
 VVO_REASON = "전쟁·제재로 한국발 직항 운항 중단"
 
 # 항공사 코드: (한글명, 영문명, FSC/LCC)
@@ -365,7 +369,7 @@ def main():
         w("INSERT INTO airport (airport_code, name_ko, name_en, city_name_ko, country_code, latitude, longitude, timezone, is_hub) VALUES "
           f"({q(a[0])}, {q(a[1])}, {q(a[2])}, {q(a[3])}, {q(a[4])}, {a[5]}, {a[6]}, {q(a[7])}, {q(a[8])});")
     w("")
-    w("-- [M] 여행지 27개 (destination_id 는 1부터 순서대로)")
+    w("-- [M] 여행지 %d개 (destination_id 는 1부터 순서대로)" % len(DESTINATIONS))
     for i, d in enumerate(DESTINATIONS):
         unavailable = d[0] == "블라디보스토크"
         c1, c2 = POSTER.get(d[0], (None, None))
