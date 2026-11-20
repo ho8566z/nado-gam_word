@@ -10,6 +10,7 @@ import json
 import os
 
 import domestic_data
+import hotel_data
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -248,4 +249,5 @@ def emit(w, q, dest_id, dest_region, min_icn_minutes):
         for theme in THEMES:
             add_tour("DOMESTIC", name, theme, None, DOMESTIC_NIGHTS, True, None, name)
     w("")
+    stats.update(hotel_data.emit(w, q, dest_id, dest_region, city_id, FEATURED, EXCLUDED))
     return stats
