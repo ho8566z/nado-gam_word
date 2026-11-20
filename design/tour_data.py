@@ -143,7 +143,7 @@ def build_days(theme, city, items, brand, nights, depart_label, domestic):
     total = nights + 1
     mids = mid_days(theme, city, items, brand)
     days = []
-    start = "서울·대전" if domestic else "인천"
+    start = "서울" if domestic else "인천"
     first_act = mids[0]
     if nights == 1:
         days.append((f"{city} 도착과 대표 체험", f"{start}에서 출발해 {city}에 도착합니다. 가이드와 만나 {first_act[1]}"))
@@ -165,7 +165,7 @@ def includes_text(theme):
 
 def excludes_text(domestic):
     lines = ["호텔 숙박(호텔 메뉴에서 별도 선택)", "개인 경비와 쇼핑", "여행자 보험", "선택 관광과 가이드 팁"]
-    lines.insert(0, "서울·대전 출발 이동편(국내여행 메뉴에서 별도 선택)" if domestic else "국제선 항공권(해외 여행 메뉴에서 별도 선택)")
+    lines.insert(0, "서울 출발 이동편(국내여행 메뉴에서 별도 선택)" if domestic else "국제선 항공권(해외 여행 메뉴에서 별도 선택)")
     return "\n".join(lines)
 
 
