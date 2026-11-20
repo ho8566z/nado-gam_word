@@ -9,6 +9,8 @@ import math
 import os
 import random
 
+import tour_data
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.normpath(os.path.join(HERE, "..", "..", "nado_gam", "src", "main", "resources", "data.sql"))
 
@@ -471,6 +473,16 @@ def main():
           f"(1, {q(cat)}, {q(title)}, {q(content)}, '{status}', {q(answer)}, {1 if answer else 'NULL'}, '{created}', "
           f"{q(answered) if answered else 'NULL'});")
     w("")
+
+    # [M] 국내 도시·투어 (tour_data.py, 11/20 추가)
+    region_of_cc = {c[0]: c[3] for c in COUNTRIES}
+    dest_region = {d[0]: region_of_cc[d[2]] for d in DESTINATIONS}
+    min_icn = {}
+    for r in rows:
+        if r["origin"] == "ICN":
+            min_icn[r["dest"]] = min(min_icn.get(r["dest"], 10 ** 9), minutes(r["duration"]))
+    tour_stats = tour_data.emit(w, q, dest_id, dest_region, min_icn)
+    print("tours:", tour_stats)
 
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(out))
