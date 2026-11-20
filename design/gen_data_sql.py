@@ -102,7 +102,7 @@ AIRPORTS = [
     ("MEL", "멜버른공항", "Melbourne Airport", "멜버른", "AU", -37.6690, 144.8410, "Australia/Melbourne", False),
     ("GUM", "괌국제공항", "Antonio B. Won Pat International Airport", "괌", "GU", 13.4834, 144.7960, "Pacific/Guam", False),
 ]
-AIRPORTS += expand_data.AIRPORTS_NEW   # 11/21 여행지 100곳 확장
+AIRPORTS += expand_data.AIRPORTS_NEW   # 11/20 여행지 100곳 확장
 AP = {a[0]: a for a in AIRPORTS}
 
 # (한글명, 영문명, 국가, 대표공항, 위도, 경도, 상태, 불가사유, 소개)
@@ -159,7 +159,7 @@ DESTINATIONS = [
     ("멜버른", "Melbourne", "AU", "MEL", -37.8136, 144.9631, "카페와 골목 예술, 타임아웃 2026 세계 1위 도시"),
     ("괌", "Guam", "GU", "GUM", 13.4443, 144.7937, "가깝고 한적한 태평양의 휴양 섬"),
 ]
-DESTINATIONS += expand_data.DESTINATIONS_NEW   # 11/21 여행지 100곳 확장 (51~100번)
+DESTINATIONS += expand_data.DESTINATIONS_NEW   # 11/20 여행지 100곳 확장 (51~100번)
 COUNTRIES += expand_data.COUNTRIES_NEW
 VVO_REASON = "전쟁·제재로 한국발 직항 운항 중단"
 
