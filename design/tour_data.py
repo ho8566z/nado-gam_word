@@ -9,6 +9,8 @@ import hashlib
 import json
 import os
 
+import domestic_data
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 FOOD, SPORTS, ART = "FOOD_DRINK", "SPORTS_ACTIVITY", "ART_REST"
@@ -188,6 +190,7 @@ def emit(w, q, dest_id, dest_region, min_icn_minutes):
         w("INSERT INTO domestic_city (name_ko, province, latitude, longitude, summary, poster_color_from, poster_color_to, status, sort_order) VALUES "
           f"({q(name)}, {q(prov)}, {lat}, {lng}, {q(summary)}, {q(c1)}, {q(c2)}, 'AVAILABLE', {i});")
     w("")
+    stats["transports"] = domestic_data.emit_transport(w, q, city_id)
 
     state = {"tour": 0, "option": 0, "sort": 0}
 
