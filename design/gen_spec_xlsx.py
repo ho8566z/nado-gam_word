@@ -10,6 +10,7 @@ import os
 import re
 
 import spec_additions as A
+import spec_extra_sheets as extra
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter as L
@@ -716,6 +717,9 @@ def main():
     sheet_fn(wb)
     n_tables, n_cols = sheet_tables(wb)
     sheet_rules(wb)
+    sql = open(SCHEMA, encoding="utf-8").read()
+    n_tr, n_wf, n_fk = extra.add_sheets(wb, sql, style, title, GRAY, LIGHT, CENTER, WRAP, fit_width, table_sheet)
+    print(f"트러블슈팅 {n_tr} / 와이어프레임 {n_wf} / ERD 관계 {n_fk}")
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     wb.save(OUT)
     print("저장:", OUT)
