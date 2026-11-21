@@ -3,7 +3,7 @@
 
 실행: python gen_spec_xlsx.py   →  ../excel_output/나도감_명세서.xlsx
 - 테이블 명세서는 nado_gam 의 schema.sql 을 읽어서 만든다(구조는 항상 실제 DDL 과 같다).
-- 나머지 시트의 내용은 이 파일에 적혀 있다. 구현 상태는 2026-11-21 기준이다(테스트 149개 통과).
+- 나머지 시트의 내용은 이 파일에 적혀 있다. 구현 상태는 2026-11-21 기준이다(테스트 161개 통과).
 """
 import datetime as dt
 import os
@@ -113,7 +113,7 @@ def sheet_overview(wb):
             ("백엔드", "Java 17, Spring Boot 4.1.2, Spring Security(BCrypt), Spring JDBC(JdbcClient, 읽기 조회), Spring Data JPA(계정·예약 등 쓰기), ZXing(QR 생성)"),
             ("프론트엔드", "Thymeleaf(서버 렌더링), HTML/CSS/JavaScript(라이트 테마, 반응형), globe.gl(지구본), 대표 관광지 사진은 Wikipedia·Wikimedia Commons(출처 표기)"),
             ("DB", "로컬 H2(MySQL 모드), 운영 MySQL 8 (mysql 프로필, 접속 정보는 환경변수)"),
-            ("빌드·테스트", "Gradle 9.8.2, JUnit 5 / Spring Boot Test (테스트 149개)"),
+            ("빌드·테스트", "Gradle 9.8.2, JUnit 5 / Spring Boot Test (테스트 161개)"),
             ("협업·형상", "Git, GitHub (ho8566z/nado_gam, ho8566z/nado_gam_word). dev / feature 브랜치로 나눠 개발"),
             ("개발 환경", "IntelliJ, VS Code, Chrome(화면 확인)"),
             ("2단계(예정)", "날짜별 재고와 동시성 제어(낙관적 락·100명 동시 예약 테스트), 실제 결제 연동, '나도 감' 동행 모집, 후기·찜, Redis 캐시, k6 부하 테스트, GitHub Actions + Docker 배포"),
@@ -325,7 +325,7 @@ REQ = [
     ("@@REQ_NEW_NONFUNC@@",),
     ("비기능", "사용성", "ux-001", "반응형", "-", "모바일 화면 폭에서도 깨지지 않아야 한다.", "CSS 미디어 쿼리, 760px 이하 하단 탭 바. 390px 폭은 브라우저로 확인, 실기기 확인은 사용자 몫", "비기능", "중", "완료"),
     ("비기능", "사용성", "ux-002", "접근성", "-", "키보드로 캐로셀·카드를 조작할 수 있고, 동작 줄이기 설정을 존중해야 한다.", "prefers-reduced-motion", "비기능", "중", "완료"),
-    ("비기능", "품질", "qa-001", "테스트 코드", "-", "더미데이터 규칙, 조회·쓰기 기능, 권한, 결제·좌석 차감, 관리자 CRUD 를 자동 테스트로 검증해야 한다.", "149개 통과(11/21)", "비기능", "상", "완료"),
+    ("비기능", "품질", "qa-001", "테스트 코드", "-", "더미데이터 규칙, 조회·쓰기 기능, 권한, 결제·좌석 차감, 관리자 CRUD 를 자동 테스트로 검증해야 한다.", "161개 통과(11/21)", "비기능", "상", "완료"),
     ("비기능", "운영", "ops-001", "실행 환경", "-", "로컬은 H2, 운영은 MySQL 로 실행할 수 있어야 하고 접속 정보는 환경변수로 받아야 한다.", "local / mysql 프로필", "비기능", "중", "완료"),
 ]
 REQ = [r for x in REQ for r in (A.REQ_NEW if x == ("@@REQ_NEW@@",) else A.REQ_NEW_NONFUNC if x == ("@@REQ_NEW_NONFUNC@@",) else [x])]
@@ -484,7 +484,7 @@ API = [
     ("인증", "로그아웃", "POST", "/logout", "세션 종료", "auth-003", "사용자 이상", "브라우저", "Form _csrf", "302 → /login", "완료"),
 ]
 API += A.API_NEW
-_ORDER = ["메인", "지구본", "해외 여행", "특별기획", "베스트셀러", "투어", "국내여행", "호텔·크루즈", "회원가입", "인증", "계정", "예약·결제", "QR", "고객문의", "사진", "관리자"]
+_ORDER = ["메인", "지구본", "해외 여행", "특별기획", "베스트셀러", "투어", "국내여행", "호텔·크루즈", "회원가입", "인증", "계정", "예약·결제", "QR", "고객문의", "사진", "공통", "관리자"]
 API.sort(key=lambda r: _ORDER.index(r[0]))   # 같은 구분은 원래 순서를 유지한다(안정 정렬)
 
 
@@ -690,7 +690,7 @@ RULES = [
     ("코드 컨벤션", "패키지", "기능(도메인) 단위: com.nadogam.{home, travel, globe, special, bestseller, tour, domestic, stay, cart, qr, support, popup, account, auth, admin, config, common}. 컨트롤러·조회 저장소·화면용 record 를 같은 도메인 패키지에 둔다."),
     ("코드 컨벤션", "화면용 값", "화면 표시 문자열(가격 ₩ 콤마, 시각, 소요시간, 좌석등급)은 record 의 메서드나 Fmt 에서 만든다. 템플릿에는 계산을 두지 않는다."),
     ("코드 컨벤션", "조회", "읽기 조회는 JdbcClient + record 로 작성하고, 정렬·필터 값은 화이트리스트로 검증해 SQL 에 직접 넣지 않는다. 쓰기 기능(계정·예약·문의 등)은 JPA 로 작성한다."),
-    ("코드 컨벤션", "테스트", "테스트 이름은 한글 문장으로 쓴다. 기능별 테스트 클래스(SeedData·Dashboard·TravelSearch·Login·Theme·Popup·Support·Tour·Domestic·Stay·Cart·CartFlight·SeatDeduction·Qr·AdminCatalog·AdminProductCrud·DestPhotos)로 나눈다. 149개."),
+    ("코드 컨벤션", "테스트", "테스트 이름은 한글 문장으로 쓴다. 기능별 테스트 클래스(SeedData·Dashboard·TravelSearch·Login·Theme·Popup·Support·Tour·Domestic·Stay·Cart·CartFlight·SeatDeduction·Qr·AdminCatalog·AdminProductCrud·DestPhotos)로 나눈다. 161개."),
     ("커밋 컨벤션", "형식", "타입(범위): 제목 — 제목은 50자 안쪽 한국어, 마침표 없음. 본문은 무엇을·왜 바꿨는지. 한 커밋에는 한 가지 변경만 담는다."),
     ("커밋 컨벤션", "타입", "feat, fix, refactor, style, docs, test, chore 를 쓴다. 날짜·시각·파일 경로만 쓴 메시지는 쓰지 않는다."),
     ("브랜치", "전략", "main(안정), dev(통합), feature/*(기능별). feature 는 dev 에서 만들어 dev 로 합친다. main 에서 직접 개발하지 않는다."),
