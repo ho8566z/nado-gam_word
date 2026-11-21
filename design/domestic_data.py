@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""국내 여행지 10곳의 이동편 더미 데이터(도시마다 5개: 서울 출발 3 + 대전 출발 2).
+"""국내 여행지 11곳의 이동편 더미 데이터(도시마다 5개: 서울 출발 3 + 대전 출발 2, 서울은 목적지라 대전 출발 5).
 
 시간표·요금은 실제 노선을 참고해 임의로 만든 예시 값이다(성인 편도 1인 기준).
 tour_data.emit 이 도시 INSERT 직후에 emit_transport 를 호출한다.
@@ -78,16 +78,23 @@ TRANSPORT = {
         ("DAEJEON", "INTERCITY_BUS", "시외버스 대전→단양", "09:00", 180, 14000, "청주 경유 하루 3회"),
         ("DAEJEON", "TRAIN", "KTX 대전→오송 환승 단양", "08:00", 140, 25000, "오송역에서 시외버스 환승"),
     ],
+    "서울": [
+        ("DAEJEON", "TRAIN", "KTX 대전→서울", "07:30", 60, 23700, "서울역 도착, 지하철 연결"),
+        ("DAEJEON", "TRAIN", "SRT 대전→수서", "08:20", 55, 21800, "수서역 도착"),
+        ("DAEJEON", "TRAIN", "무궁화호 대전→서울", "09:00", 120, 11800, "서울역 도착(완행)"),
+        ("DAEJEON", "EXPRESS_BUS", "고속버스 대전→서울", "08:00", 110, 9700, "서울고속버스터미널 도착"),
+        ("DAEJEON", "INTERCITY_BUS", "시외버스 대전→동서울", "10:00", 120, 9000, "동서울터미널 도착"),
+    ],
 }
 
 
 def emit_transport(w, q, city_id):
     """w: 줄 추가 함수, q: 문자열 이스케이프, city_id: 도시 이름→id. 만든 행 수를 돌려 준다."""
-    w("-- [M] 국내 이동편 50개 (도시마다 5개: 서울 출발 3 + 대전 출발 2, 요금은 성인 편도 1인)")
+    w("-- [M] 국내 이동편 55개 (도시마다 5개: 서울 출발 3 + 대전 출발 2, 서울은 대전 출발 5, 요금은 성인 편도 1인)")
     n = 0
     for city, rows in TRANSPORT.items():
         assert len(rows) == 5, city
-        assert [r[0] for r in rows].count("SEOUL") == 3, city
+        assert [r[0] for r in rows].count("SEOUL") == (0 if city == "서울" else 3), city
         for i, (origin, mode, name, depart, minutes, fare, note) in enumerate(rows, start=1):
             w("INSERT INTO domestic_transport (city_id, origin, mode, name, depart_time, duration_minutes, fare, note, sort_order) VALUES "
               f"({city_id[city]}, {q(origin)}, {q(mode)}, {q(name)}, '{depart}:00', {minutes}, {fare}, {q(note)}, {i});")

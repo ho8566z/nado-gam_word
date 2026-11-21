@@ -49,6 +49,7 @@ DOMESTIC = [
     ("순천", "전남", 34.9506, 127.4872, "순천만 습지와 국가정원이 있는 생태 도시", "#82c91e", "#2b6a1c"),
     ("통영", "경남", 34.8544, 128.4331, "한려수도와 충무김밥, 예술가의 항구", "#15aabf", "#0b4f6c"),
     ("단양", "충북", 36.9845, 128.3655, "남한강과 도담삼봉, 패러글라이딩의 고장", "#7950f2", "#3b2a8a"),
+    ("서울", "서울", 37.5665, 126.9780, "경복궁과 한강, 시장과 야경이 어우러진 대한민국의 수도", "#845ef7", "#33237a"),   # 11/21 추가(해외 탭에서 뺀 서울을 국내 탭에 둠)
 ]
 
 # 콜라보 브랜드(모두 가상): 테마별 풀
@@ -157,7 +158,7 @@ def build_days(theme, city, items, brand, nights, depart_label, domestic):
     total = nights + 1
     mids = mid_days(theme, city, items, brand)
     days = []
-    start = "서울" if domestic else "인천"
+    start = ("대전" if city == "서울" else "서울") if domestic else "인천"
     first_act = mids[0]
     if nights == 1:
         days.append((f"{city} 도착과 대표 체험", f"{start}에서 출발해 {city}에 도착합니다. 가이드와 만나 {first_act[1]}"))
@@ -177,9 +178,12 @@ def includes_text(theme):
     return "\n".join(base + extra)
 
 
-def excludes_text(domestic):
+def excludes_text(domestic, place=None):
     lines = ["호텔 숙박(호텔 메뉴에서 별도 선택)", "개인 경비와 쇼핑", "여행자 보험", "선택 관광과 가이드 팁"]
-    lines.insert(0, "서울 출발 이동편(국내여행 메뉴에서 별도 선택)" if domestic else "국제선 항공권(해외 여행 메뉴에서 별도 선택)")
+    first = "국제선 항공권(해외 여행 메뉴에서 별도 선택)"
+    if domestic:
+        first = "이동편(국내여행 메뉴에서 별도 선택)" if place == "서울" else "서울 출발 이동편(국내여행 메뉴에서 별도 선택)"
+    lines.insert(0, first)
     return "\n".join(lines)
 
 
@@ -198,7 +202,7 @@ def emit(w, q, dest_id, dest_region, min_icn_minutes):
     research_overseas, research_domestic = load_research()
     stats ={"overseas": 0, "domestic": 0, "options": 0, "days": 0}
 
-    w("-- [M] 국내 여행지 10곳 (경주·강릉·속초·부산·제주·전주·여수·순천·통영·단양)")
+    w("-- [M] 국내 여행지 11곳 (경주·강릉·속초·부산·제주·전주·여수·순천·통영·단양·서울)")
     city_id = {}
     for i, (name, prov, lat, lng, summary, c1, c2) in enumerate(DOMESTIC, start=1):
         city_id[name] = i
@@ -210,7 +214,7 @@ def emit(w, q, dest_id, dest_region, min_icn_minutes):
     state = {"tour": 0, "option": 0, "sort": 0}
 
     def add_tour(scope, place, theme, region, nights_list, domestic, dest, city):
-        r = (research_domestic if domestic else research_overseas)[place]
+        r = (research_domestic.get(place) or research_overseas[place]) if domestic else research_overseas[place]   # 국내 서울은 조사 파일 A 의 서울을 쓴다
         items = r[THEME_KEY[theme]]
         assert len(items) >= 2, (place, theme)
         first, second = items[0], items[1]
@@ -232,7 +236,7 @@ def emit(w, q, dest_id, dest_region, min_icn_minutes):
         sales = 20 + h(place + theme + "s") % 600 + (900 if pick else 0)
         w("INSERT INTO tour (scope, destination_id, city_id, theme, title, subtitle, collab_brand, highlights, includes, excludes, source_note, status, sort_order, view_count, sales_count, agency_pick) VALUES "
           f"({q(scope)}, {dest_sql}, {city_sql}, {q(theme)}, {q(title)}, {q(subtitle)}, {q(brand)}, {q(fit(highlights, 500))}, "
-          f"{q(includes_text(theme))}, {q(excludes_text(domestic))}, {q(fit('웹 조사 참고: ' + ', '.join(i['name'] for i in items[:3]) + ' (상품·브랜드는 가상)', 200))}, 'ON_SALE', {state['sort']}, {views}, {sales}, {pick});")
+          f"{q(includes_text(theme))}, {q(excludes_text(domestic, place))}, {q(fit('웹 조사 참고: ' + ', '.join(i['name'] for i in items[:3]) + ' (상품·브랜드는 가상)', 200))}, 'ON_SALE', {state['sort']}, {views}, {sales}, {pick});")
         depart = "역·터미널" if domestic else "공항"
         for nights in nights_list:
             state["option"] += 1
@@ -261,7 +265,7 @@ def emit(w, q, dest_id, dest_region, min_icn_minutes):
         for theme in themes:
             add_tour("OVERSEAS", place, theme, region, nights_list, False, place, None)
     w("")
-    w("-- [M] 국내 투어: 10개 도시 × 3테마 (1박2일·2박3일·3박4일)")
+    w("-- [M] 국내 투어: 11개 도시 × 3테마 (1박2일·2박3일·3박4일)")
     for name, *_ in DOMESTIC:
         for theme in THEMES:
             add_tour("DOMESTIC", name, theme, None, DOMESTIC_NIGHTS, True, None, name)
