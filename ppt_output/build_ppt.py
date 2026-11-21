@@ -20,26 +20,31 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CAP = os.path.join(HERE, "captures")
 ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "nado_gam"))
 sys.path.insert(0, os.path.join(HERE, "..", "design"))
-TOTAL = 36
+TOTAL = 34
 
 # ---- 색·글꼴 ---------------------------------------------------------------
 INK = RGBColor(0x1B, 0x22, 0x36)
 MUTED = RGBColor(0x5B, 0x66, 0x7F)
-ORANGE = RGBColor(0xFF, 0x5A, 0x36)
-ORANGE_INK = RGBColor(0xD9, 0x3A, 0x17)
+ACCENT = RGBColor(0x0B, 0x9A, 0x92)       # 주 포인트: 청량한 청록
+ACCENT_INK = RGBColor(0x07, 0x76, 0x6F)   # 밝은 배경 위 글자용 진한 청록
+ACCENT_LIGHT = RGBColor(0x8A, 0xEB, 0xE0)  # 어두운 상자 위 글자용 연한 청록
+CORAL = RGBColor(0xE8, 0x5D, 0x4A)         # 경고·예외 표시 전용(의미 구분용)
 BLUE = RGBColor(0x2F, 0x3D, 0xFF)
 CARD = RGBColor(0xFF, 0xFF, 0xFF)       # 카드(흰색 + 테두리)
-BG = RGBColor(0xE9, 0xE1, 0xD2)         # 페이지 배경(카드와 뚜렷이 구분되는 모래색)
-DECO = RGBColor(0xE0, 0xD6, 0xC2)       # 배경 장식 원
-CARD_LINE = RGBColor(0xD2, 0xC7, 0xB1)
-INNER = RGBColor(0xF4, 0xEF, 0xE4)      # 카드 안쪽 요소
-ZEBRA = RGBColor(0xF4, 0xEF, 0xE4)
+BG = RGBColor(0xC9, 0xEC, 0xFF)         # 페이지 배경 식별용(위쪽 맑은 하늘색). 실제로는 아래로 민트 그라데이션
+BG_BOTTOM = RGBColor(0xD6, 0xF8, 0xEE)  # 배경 아래쪽: 시원한 민트
+SUN = RGBColor(0xFF, 0xFF, 0xFF)        # 배경 장식: 큰 물방울(흰색)
+SUN_SOFT = RGBColor(0xE3, 0xF6, 0xFF)   # 배경 장식: 연한 하늘
+CLOUD = RGBColor(0xEE, 0xFB, 0xF7)      # 배경 장식: 연한 민트
+CARD_LINE = RGBColor(0xA9, 0xD3, 0xE6)
+INNER = RGBColor(0xE8, 0xF6, 0xFA)      # 카드 안쪽 요소
+ZEBRA = RGBColor(0xE8, 0xF6, 0xFA)
 LINE = RGBColor(0xE4, 0xDD, 0xD2)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 DARK = RGBColor(0x1B, 0x22, 0x36)
 GREEN = RGBColor(0x2B, 0x8A, 0x3E)
 SLATE = RGBColor(0x5B, 0x66, 0x7F)
-FAINT = RGBColor(0x8C, 0x85, 0x77)
+FAINT = RGBColor(0x4F, 0x76, 0x90)
 FONT = "맑은 고딕"
 MONO = "Consolas"
 
@@ -62,11 +67,23 @@ def new_prs():
 
 def blank(prs, bg=BG, deco=True):
     s = prs.slides.add_slide(prs.slide_layouts[6])
-    s.background.fill.solid()
-    s.background.fill.fore_color.rgb = bg
-    if deco and bg == BG:                     # 모서리에 걸친 큰 원: 배경에 깊이를 준다
-        rect(s, W - 4.6, -3.4, 8.0, 8.0, fill=DECO, shape=MSO_SHAPE.OVAL, noline=True)
-        rect(s, -3.4, H - 4.2, 7.4, 7.4, fill=DECO, shape=MSO_SHAPE.OVAL, noline=True)
+    if bg == BG:                               # 맑은 하늘색에서 시원한 민트로 내려오는 그라데이션
+        f = s.background.fill
+        f.gradient()
+        f.gradient_angle = 270
+        stops = f.gradient_stops
+        stops[0].position = 0.0
+        stops[0].color.rgb = BG
+        stops[1].position = 1.0
+        stops[1].color.rgb = BG_BOTTOM
+    else:
+        s.background.fill.solid()
+        s.background.fill.fore_color.rgb = bg
+    if deco and bg == BG:                     # 모서리의 물방울·구름: 청량한 느낌
+        rect(s, W - 5.2, -3.6, 8.6, 8.6, fill=SUN_SOFT, shape=MSO_SHAPE.OVAL, noline=True)
+        rect(s, W - 4.2, -2.6, 6.6, 6.6, fill=SUN, shape=MSO_SHAPE.OVAL, noline=True)
+        rect(s, -3.2, H - 3.6, 7.0, 7.0, fill=CLOUD, shape=MSO_SHAPE.OVAL, noline=True)
+        rect(s, 1.6, H - 1.5, 5.2, 5.2, fill=CLOUD, shape=MSO_SHAPE.OVAL, noline=True)
     return s
 
 
@@ -155,7 +172,7 @@ def line(s, x1, y1, x2, y2, color=LINE, width=1.5, arrow=False, dash=False):
 
 
 def header(s, label, title, sub=None):
-    text(s, 0, 0.62, W, 0.4, label, size=15, bold=True, color=ORANGE_INK, align=PP_ALIGN.CENTER)
+    text(s, 0, 0.62, W, 0.4, label, size=15, bold=True, color=ACCENT_INK, align=PP_ALIGN.CENTER)
     text(s, 0, 1.0, W, 0.9, title, size=38, bold=True, color=INK, align=PP_ALIGN.CENTER)
     if sub:
         text(s, 0, 1.95, W, 0.45, sub, size=17, color=MUTED, align=PP_ALIGN.CENTER)
@@ -163,18 +180,18 @@ def header(s, label, title, sub=None):
 
 def footer(s, n, dark=False, strip=True):
     if strip and not dark:                    # 왼쪽 색 띠: PART 1 주황 · PART 2 파랑 · PART 3 남색
-        rect(s, 0, 0, 0.3, H, fill=ORANGE if n <= 9 else (BLUE if n <= 24 else DARK), noline=True)
+        rect(s, 0, 0, 0.3, H, fill=ACCENT if n <= 9 else (BLUE if n <= 24 else DARK), noline=True)
     c = FAINT if not dark else RGBColor(0x9A, 0xA3, 0xBA)
     text(s, MX, 10.55, 8, 0.4, "나도 감 · nado_gam", size=12, color=c)
     text(s, W - MX - 3, 10.55, 3, 0.4, "%d / %d" % (n, TOTAL), size=12, color=c, align=PP_ALIGN.RIGHT)
 
 
-def pill(s, x, y, w, h, label, fill=ORANGE, color=WHITE, size=14):
+def pill(s, x, y, w, h, label, fill=ACCENT, color=WHITE, size=14):
     rect(s, x, y, w, h, fill=fill, radius=h / 2)
     text(s, x, y, w, h, label, size=size, bold=True, color=color, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
 
 
-def card(s, x, y, w, h, title, body, accent=ORANGE, tsize=20, bsize=15, num=None, fill=CARD, line_c=None, body_color=MUTED):
+def card(s, x, y, w, h, title, body, accent=ACCENT, tsize=20, bsize=15, num=None, fill=CARD, line_c=None, body_color=MUTED):
     rect(s, x, y, w, h, fill=fill, line=line_c, radius=0.16)
     rect(s, x, y + 0.28, 0.09, h - 0.56, fill=accent)
     tx = x + 0.4
@@ -185,14 +202,14 @@ def card(s, x, y, w, h, title, body, accent=ORANGE, tsize=20, bsize=15, num=None
     text(s, x + 0.4, y + (1.05 if num else 0.95), w - 0.65, h - 1.15, body, size=bsize, color=body_color, spacing=1.3)
 
 
-def bullets(s, x, y, w, h, lines, size=17, color=INK, gap=1.4, dot=ORANGE_INK):
+def bullets(s, x, y, w, h, lines, size=17, color=INK, gap=1.4, dot=ACCENT_INK):
     text(s, x, y, w, h, [("•  " + t, {}) for t in lines], size=size, color=color, spacing=gap)
 
 
 def code_block(s, x, y, w, h, lines, size=12.5, title=None):
     rect(s, x, y, w, h, fill=DARK, radius=0.15)
     if title:
-        text(s, x + 0.35, y + 0.2, w - 0.7, 0.4, title, size=12, bold=True, color=RGBColor(0xFF, 0x9A, 0x7A), font=FONT)
+        text(s, x + 0.35, y + 0.2, w - 0.7, 0.4, title, size=12, bold=True, color=ACCENT_LIGHT, font=FONT)
     text(s, x + 0.35, y + (0.65 if title else 0.3), w - 0.7, h - 0.9, lines, size=size, color=RGBColor(0xE8, 0xEA, 0xF2), font=MONO, spacing=1.18)
 
 
@@ -273,11 +290,11 @@ def prepare_assets():
 # ============================ PART 1 · 기획 ==========================================
 def slide_cover(prs, n=1):
     s = blank(prs, BG)
-    rect(s, 0, 0, 0.5, H, fill=ORANGE)
-    rect(s, 11.6, 1.8, 8.2, 8.2, fill=RGBColor(0xFF, 0xD9, 0xCC), shape=MSO_SHAPE.OVAL, noline=True)   # 지구본 뒤 은은한 원(글자보다 먼저 그린다)
+    rect(s, 0, 0, 0.5, H, fill=ACCENT)
+    rect(s, 11.6, 1.8, 8.2, 8.2, fill=RGBColor(0xBD, 0xF0, 0xE8), shape=MSO_SHAPE.OVAL, noline=True)   # 지구본 뒤 은은한 원(글자보다 먼저 그린다)
     pill(s, 1.6, 2.2, 3.6, 0.55, "PERSONAL PROJECT · 4TH", fill=DARK, size=14)
     text(s, 1.5, 3.1, 9, 2.2, "나도 감", size=120, bold=True, color=INK)
-    text(s, 1.6, 5.5, 9.8, 0.9, "nado_gam — 지구본으로 떠나는 여행사 웹 서비스", size=25, bold=True, color=ORANGE_INK)
+    text(s, 1.6, 5.5, 9.8, 0.9, "nado_gam — 지구본으로 떠나는 여행사 웹 서비스", size=25, bold=True, color=ACCENT_INK)
     text(s, 1.6, 6.5, 9.2, 1.2, "가고 싶은 여행지를 고르면 항공편·투어·호텔·크루즈를 한 번에 담고, 비행 경로는 3D 지구본으로 보여 줍니다.",
          size=18, color=MUTED, spacing=1.3)
     text(s, 1.6, 9.2, 8, 0.5, "발표자 이윤호", size=20, bold=True, color=INK)
@@ -288,10 +305,10 @@ def slide_cover(prs, n=1):
 
 def slide_index(prs, n=2):
     s = blank(prs)
-    text(s, 0, 0.62, W, 0.4, "INDEX", size=15, bold=True, color=ORANGE_INK, align=PP_ALIGN.CENTER)
+    text(s, 0, 0.62, W, 0.4, "INDEX", size=15, bold=True, color=ACCENT_INK, align=PP_ALIGN.CENTER)
     text(s, 0, 1.0, W, 0.9, "나도 감 목차", size=38, bold=True, align=PP_ALIGN.CENTER)
     parts = [
-        ("PART 1 · PLAN", "기획", ORANGE, ["프로젝트 소개", "주제 선정 배경", "목표", "벤치마킹", "차별점", "활용 방안·기대 효과"]),
+        ("PART 1 · PLAN", "기획", ACCENT, ["프로젝트 소개", "주제 선정 배경", "목표", "벤치마킹", "차별점", "활용 방안·기대 효과"]),
         ("PART 2 · DESIGN", "시연 및 설계", BLUE, ["핵심 사용자 시나리오", "시연 (캡처)", "서비스 구성도·메뉴 구성", "ERD·명세서·API", "WBS·유스케이스", "워크플로우·패키지 구조"]),
         ("PART 3 · DELIVER", "구현 및 평가", DARK, ["개발 환경·Git 전략", "핵심 구현 3가지", "테스트·검증", "트러블슈팅", "성과·한계·향후 확장", "질의응답"]),
     ]
@@ -315,11 +332,11 @@ def slide_index(prs, n=2):
     return s
 
 
-def slide_part(prs, n, no, part, title, items, col=ORANGE):
+def slide_part(prs, n, no, part, title, items, col=ACCENT):
     s = blank(prs, BG)
     rect(s, 0, 0, 0.5, H, fill=col)
     text(s, 1.8, 2.2, 6, 3.4, no, size=230, bold=True, color=col)
-    text(s, 9.2, 3.1, 9, 0.5, part, size=18, bold=True, color=ORANGE_INK if col == ORANGE else col)
+    text(s, 9.2, 3.1, 9, 0.5, part, size=18, bold=True, color=ACCENT_INK if col == ACCENT else col)
     text(s, 9.2, 3.6, 9.5, 1.3, title, size=58, bold=True, color=INK)
     rect(s, 9.25, 5.25, 1.6, 0.07, fill=col)
     text(s, 9.2, 5.6, 9.5, 3.5, ["·  " + t for t in items], size=22, color=MUTED, spacing=1.55)
@@ -331,13 +348,13 @@ def slide_intro(prs, n):
     s = blank(prs)
     header(s, "PROJECT · OVERVIEW", "프로젝트 소개", "나도 갈래! — 가고 싶은 곳을 고르면 예약까지 한 흐름으로 이어지는 여행사 웹 서비스")
     rect(s, MX, 2.8, 7.2, 6.4, fill=CARD, radius=0.2)
-    text(s, MX + 0.5, 3.1, 6.2, 0.5, "CONCEPT", size=14, bold=True, color=ORANGE_INK)
+    text(s, MX + 0.5, 3.1, 6.2, 0.5, "CONCEPT", size=14, bold=True, color=ACCENT_INK)
     text(s, MX + 0.5, 3.55, 6.3, 1.4, "'나도 감'은\n‘나도 갈래!’라는 뜻", size=30, bold=True)
     rows = [("지구본", "비행 경로를 3D 지구본으로 보여 줘요"), ("한 흐름", "여행지 → 항공편·투어·호텔 → 결제 → QR"),
             ("운영까지", "관리자가 상품·노출·문의·체크인 관리")]
     for i, (k, v) in enumerate(rows):
         y = 5.35 + i * 1.2
-        pill(s, MX + 0.5, y, 1.7, 0.5, k, fill=ORANGE, size=14)
+        pill(s, MX + 0.5, y, 1.7, 0.5, k, fill=ACCENT, size=14)
         text(s, MX + 2.4, y - 0.04, 4.5, 0.9, v, size=17, color=INK, spacing=1.25)
     stats = [("100", "곳", "해외 여행지"), ("304", "편", "항공편"), ("141", "개", "투어"),
              ("351", "개", "호텔"), ("7", "곳", "크루즈"), ("149", "개", "자동 테스트")]
@@ -345,7 +362,7 @@ def slide_intro(prs, n):
     for i, (num, unit, label) in enumerate(stats):
         x = sx + (i % 3) * (cw + gx)
         y = sy + (i // 3) * (ch + gy)
-        col = ORANGE if i % 2 == 0 else BLUE
+        col = ACCENT if i % 2 == 0 else BLUE
         rect(s, x, y, cw, ch, fill=WHITE, line=LINE, radius=0.16)
         rect(s, x, y + 0.3, 0.09, ch - 0.6, fill=col)
         text(s, x + 0.35, y + 0.2, cw - 0.5, 1.1, [(num, {"size": 48, "bold": True, "color": col})], size=48)
@@ -355,7 +372,7 @@ def slide_intro(prs, n):
     info = [("개발 기간", "2026.11.19 ~ 11.25"), ("개발 인원", "1인 (이윤호)"), ("핵심 스택", "Spring Boot 4 · Thymeleaf · H2/MySQL")]
     for i, (k, v) in enumerate(info):
         x = 9.35 + i * 3.2
-        text(s, x, 8.0, 3.0, 0.4, k, size=13, bold=True, color=ORANGE_INK)
+        text(s, x, 8.0, 3.0, 0.4, k, size=13, bold=True, color=ACCENT_INK)
         text(s, x, 8.45, 3.0, 0.7, v, size=15, bold=True, color=INK, spacing=1.2)
     footer(s, n)
     return s
@@ -369,21 +386,23 @@ def note_box(s, x, y, w, h, msg):
 
 def slide_background(prs, n):
     s = blank(prs)
-    header(s, "BACKGROUND", "주제 선정 배경과 필요성", "여행을 준비할 때 겪는 불편을 한 흐름으로 줄이고 싶었습니다")
+    header(s, "BACKGROUND", "주제 선정 배경과 필요성", "그냥, 여행이 가고 싶었습니다")
+    rect(s, MX, 2.8, W - 2 * MX, 2.4, fill=ACCENT, radius=0.22)
+    text(s, MX + 0.7, 3.05, 8, 0.5, "WHY TRAVEL", size=15, bold=True, color=RGBColor(0xDD, 0xFA, 0xF5))
+    text(s, MX + 0.7, 3.4, W - 2 * MX - 1.4, 1.0, "여행이 가고 싶다!", size=44, bold=True, color=WHITE)
+    text(s, MX + 0.7, 4.55, W - 2 * MX - 1.4, 0.6, "어디로 갈지 고르고 비교하는 과정부터 여행처럼 설레게 만들고 싶었습니다.", size=20, color=WHITE)
+    text(s, MX, 5.45, 12, 0.5, "그래서 이런 점을 풀고 싶었습니다", size=18, bold=True, color=INK)
     probs = [("상품이 따로따로", "항공권, 현지 투어, 숙소를 각각 다른 화면에서 찾고 비교해야 합니다."),
              ("노선이 한눈에 안 보임", "노선이 글자와 표로만 나와서 어느 도시에서 어느 도시로 가는지 감이 안 옵니다."),
              ("고른 뒤가 끊김", "고른 상품을 한 번에 담아 결제하고, 현장에서 바로 보여 줄 방법이 필요합니다.")]
     cw = 5.3
-    for i, (t, b) in enumerate(probs):
+    for i, (t, bd) in enumerate(probs):
         x = MX + i * (cw + 0.45)
-        card(s, x, 2.8, cw, 3.1, t, b, accent=[ORANGE, BLUE, ORANGE][i], num=str(i + 1), tsize=21, bsize=16)
-    line(s, W / 2, 6.05, W / 2, 6.75, color=ORANGE, width=4, arrow=True)
-    rect(s, MX, 6.9, W - 2 * MX, 2.0, fill=DARK, radius=0.2)
-    text(s, MX + 0.6, 7.1, 6, 0.5, "그래서 나도 감", size=16, bold=True, color=RGBColor(0xFF, 0x9A, 0x7A))
-    text(s, MX + 0.6, 7.6, W - 2 * MX - 1.2, 1.2,
-         "지구본으로 노선을 보여 주고, 여행지를 고르면 항공편·투어·호텔·크루즈를 한 곳에서 담아 모의 결제하고 QR로 예약을 확인합니다.",
-         size=22, bold=True, color=WHITE, spacing=1.3)
-    note_box(s, MX, 9.3, W - 2 * MX, 0.7, "이 주제를 고른 개인적인 계기를 한 줄로 적어 주세요 (발표 전에 이 상자는 지웁니다).")
+        card(s, x, 6.05, cw, 2.75, t, bd, accent=[ACCENT, BLUE, ACCENT][i], num=str(i + 1), tsize=21, bsize=16)
+    rect(s, MX, 9.1, W - 2 * MX, 1.15, fill=DARK, radius=0.18)
+    text(s, MX + 0.6, 9.1, W - 2 * MX - 1.2, 1.15,
+         "→ 나도 감: 지구본으로 노선을 보여 주고, 항공편·투어·호텔·크루즈를 한 곳에서 담아 모의 결제하고 QR로 예약을 확인합니다.",
+         size=19, bold=True, color=WHITE, anchor=MSO_ANCHOR.MIDDLE, spacing=1.25)
     footer(s, n)
     return s
 
@@ -399,31 +418,72 @@ def slide_goals(prs, n):
     for i, (t, b, r) in enumerate(goals):
         x = MX + (i % 2) * (cw + 0.4)
         y = 2.8 + (i // 2) * (ch + 0.35)
-        card(s, x, y, cw, ch, t, b, accent=[ORANGE, BLUE][i % 2], num="%02d" % (i + 1), tsize=22, bsize=17)
+        card(s, x, y, cw, ch, t, b, accent=[ACCENT, BLUE][i % 2], num="%02d" % (i + 1), tsize=22, bsize=17)
         pill(s, x + 0.4, y + ch - 0.85, cw - 0.8, 0.55, "달성 · " + r, fill=INNER, color=INK, size=14)
     footer(s, n)
     return s
 
 
-def slide_benchmark(prs, n):
+BENCH = {
+    "hanatour": dict(
+        label="BENCHMARK · HANATOUR", title="하나투어", sub="한국 · 패키지·항공·호텔·투어를 함께 파는 종합 여행사",
+        tiles=[("패키지·항공·호텔·투어", "한 곳에서 모두 판매"), ("하나팩 2.0", "단체 쇼핑 없이 여행지를 깊게 즐기는 패키지"), ("AI 채팅상담", "예약 내용 기반 맞춤 상담")],
+        feats=["패키지 여행 ‘하나팩 2.0’ 판매", "항공과 호텔을 골라 나만의 자유여행 구성", "‘여행갈지도’: 여행자들의 실제 이야기와 랜드마크 확인", "‘하나ON’ 밀착 케어, 매주 특가"],
+        take=["항공·호텔·투어를 한 사이트에서 함께 보여 주는 구성", "→ 나도 감도 투어·호텔·크루즈를 한 곳에 모음"],
+        diff=["노선을 글이 아니라 ‘지구본’으로 보여 주는 데 집중", "→ 도시 100곳 경로를 흐르는 불빛으로 시각화"],
+        src="출처: 하나투어 앱 소개(Apple App Store). 모두투어도 함께 확인했습니다."),
+    "tripcom": dict(
+        label="BENCHMARK · TRIP.COM", title="트립닷컴", sub="글로벌 · 항공·호텔·기차·투어까지 모으는 온라인 여행 플랫폼",
+        tiles=[("24개 언어", "39개 국가·지역에서 이용"), ("35개 통화", "현지 통화로 결제"), ("항공·호텔·기차", "렌터카·공항 픽업·투어·입장권까지")],
+        feats=["항공·호텔·기차·렌터카·공항 픽업 예약", "투어·입장권(액티비티) 예약", "24시간 다국어 고객 지원", "앱과 웹 모두 제공"],
+        take=["항공 → 호텔 → 현지 활동의 단계적 흐름", "→ 나도 감: 여행지 → 출발지 → 항공편 순서"],
+        diff=["상품 수가 아니라 ‘고르는 경험’에 집중", "→ 직항·경유 필터, 정렬, 경로 강조 등 노선 중심 화면"],
+        src="출처: Trip.com 회사 소개(about us) 및 App Store 소개. 수치는 소개 페이지 기준입니다."),
+    "nol": dict(
+        label="BENCHMARK · NOL UNIVERSE", title="놀유니버스(NOL)", sub="한국 · 여행·여가·문화를 하나의 플랫폼 ‘NOL’로 통합",
+        tiles=[("2024.12", "야놀자 플랫폼과 인터파크트리플 통합 법인 출범"), ("NOL", "여행·여가·문화를 하나의 브랜드로"), ("한 흐름", "티켓 → 숙소 → 교통 → 동선까지 연결")],
+        feats=["야놀자 플랫폼은 ‘NOL’, 인터파크 투어는 ‘NOL 인터파크투어’로 개편", "항공·숙박·패키지·티켓·엔터테인먼트를 한 플랫폼에서", "티켓 구매 기반으로 공연장 인근 숙소·교통·동선 추천", "AI 트래블 에이전시(ATA)를 목표로 재편"],
+        take=["탐색부터 예약·실행까지 끊기지 않는 ‘한 흐름’", "→ 나도 감의 담기 → 결제 → QR 예약 확인 흐름에 반영"],
+        diff=["대형 플랫폼의 폭넓은 상품과 달리 ‘여행’에 범위를 좁힘", "→ 1인 개발로 항공·투어·호텔·크루즈·국내여행을 구현"],
+        src="출처: 바이라인네트워크 ‘놀유니버스 출범’(2024.12.27), ‘NOL로 전면 개편’(2025.03.07) 기사"),
+}
+
+
+def slide_bench_all(prs, n):
+    """벤치마킹 한 장: 하나투어·트립닷컴·놀유니버스를 세 칸으로 비교한다."""
     s = blank(prs)
-    header(s, "BENCHMARK", "유사 서비스 조사", "하나투어·모두투어·트립닷컴·놀유니버스(NOL)를 브라우저로 직접 확인했습니다")
-    rows = [["조사 대상", "확인한 것", "나도 감의 선택"],
-            ["하나투어", "Next.js 기반 웹", "화면은 서버 렌더링(Thymeleaf)으로 단순하게"],
-            ["모두투어", "Next.js 기반 웹", "항공·투어·호텔·크루즈를 한 사이트에 모음"],
-            ["트립닷컴", "React 기반 웹", "여행지 → 출발지 → 항공편의 단계 흐름"],
-            ["놀유니버스(NOL)", "채용 공고에서 Java·Kotlin·Spring Boot 백엔드 확인", "백엔드는 Java 17 + Spring Boot 로 맞춤"]]
-    table(s, MX, 2.8, [3.6, 6.4, 7.4], rows, row_h=1.0, size=17)
-    note_box(s, MX, 8.2, W - 2 * MX, 0.8, "사이트별로 직접 본 기능(예: 검색 방식, 상품 구성)이 있으면 '확인한 것'에 추가해 주세요.")
-    text(s, MX, 9.2, W - 2 * MX, 0.6, "※ 기술 스택은 브라우저로 직접 확인한 내용이며, 위 사이트의 이름·로고·상품은 사용하지 않았습니다(모든 상품은 가상 데이터).",
-         size=13, color=MUTED)
+    header(s, "BENCHMARK", "유사 서비스 벤치마킹", "하나투어 · 트립닷컴 · 놀유니버스(NOL)의 공개 정보를 조사해 참고했습니다")
+    keys = ["hanatour", "tripcom", "nol"]
+    names = ["하나투어", "트립닷컴", "놀유니버스(NOL)"]
+    kinds = ["한국 · 종합 여행사", "글로벌 · 온라인 여행 플랫폼", "한국 · 여행·여가 통합 플랫폼"]
+    cw, gap = (W - 2 * MX - 0.7) / 3, 0.35
+    for i, key in enumerate(keys):
+        d = BENCH[key]
+        x = MX + i * (cw + gap)
+        col = [ACCENT, BLUE, DARK][i]
+        rect(s, x, 2.7, cw, 1.45, fill=col, radius=0.16)
+        text(s, x + 0.35, 2.8, cw - 0.7, 0.7, names[i], size=26, bold=True, color=WHITE)
+        text(s, x + 0.35, 3.5, cw - 0.7, 0.5, kinds[i], size=13, color=RGBColor(0xE6, 0xF7, 0xF5))
+        rect(s, x, 4.3, cw, 4.85, fill=CARD, radius=0.16)
+        text(s, x + 0.35, 4.45, cw - 0.7, 0.45, "핵심 3가지", size=15, bold=True, color=col if col != DARK else INK)
+        text(s, x + 0.35, 4.95, cw - 0.7, 2.4, [("•  " + b_ + " — " + sm, {}) for b_, sm in d["tiles"]], size=13, color=INK, spacing=1.3)
+        rect(s, x + 0.35, 7.3, cw - 0.7, 0.015, fill=CARD_LINE)
+        text(s, x + 0.35, 7.4, cw - 0.7, 0.45, "나도 감이 참고한 점", size=15, bold=True, color=ACCENT_INK)
+        text(s, x + 0.35, 7.9, cw - 0.7, 1.2, d["take"], size=13, color=INK, spacing=1.3)
+    rect(s, MX, 9.3, W - 2 * MX, 0.75, fill=DARK, radius=0.14)
+    text(s, MX + 0.5, 9.3, W - 2 * MX - 1, 0.75,
+         "나도 감의 선택: 폭넓은 상품보다 ‘노선을 보는 경험(지구본)’과 ‘담기 → 결제 → QR’ 한 흐름에 집중",
+         size=15, bold=True, color=WHITE, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, MX, 10.12, W - 2 * MX, 0.4,
+         "출처: 하나투어 앱 소개(App Store) · Trip.com 회사 소개 · 바이라인네트워크 ‘놀유니버스 출범’(2024.12.27) 기사. 모두투어도 함께 확인했습니다.",
+         size=10.5, color=MUTED)
     footer(s, n)
     return s
 
 
 def slide_difference(prs, n):
     s = blank(prs)
-    header(s, "DIFFERENCE", "유사 서비스와의 차별점", "나도 감만의 다섯 가지")
+    header(s, "DIFFERENCE", "유사 서비스와의 차별점", "폭넓은 상품보다 ‘노선을 보는 경험’과 ‘한 흐름’에 집중한 다섯 가지")
     items = [("지구본 노선", "가운데에서 도는 지구본과 비행 경로 시각화, 항공편에 마우스를 올리면 경로가 강조"),
              ("여행지 먼저", "여행지를 고르면 그 여행지로 가는 출발지만 보여 주는 흐름"),
              ("직항 · 경유", "직항/경유 필터와 가격·시간·출발 정렬"),
@@ -433,7 +493,7 @@ def slide_difference(prs, n):
     x0 = (W - (cw * 5 + gap * 4)) / 2
     for i, (t, b) in enumerate(items):
         x = x0 + i * (cw + gap)
-        col = ORANGE if i % 2 == 0 else BLUE
+        col = ACCENT if i % 2 == 0 else BLUE
         rect(s, x, 2.8, cw, 6.4, fill=CARD, radius=0.18)
         rect(s, x + 0.35, 3.15, 0.8, 0.09, fill=col)
         text(s, x + 0.3, 3.35, 1.5, 0.5, "%02d" % (i + 1), size=20, bold=True, color=col)
@@ -446,7 +506,7 @@ def slide_difference(prs, n):
 def slide_effect(prs, n):
     s = blank(prs)
     header(s, "UTILIZATION · EXPECTED EFFECT", "활용 방안 · 기대 효과", "이 서비스를 어떻게 쓰고, 어떤 효과를 기대하는지")
-    cols = [("활용 방안", ORANGE, ["여행사 상품 소개·예약 흐름을 시연하는 포트폴리오", "가상 데이터라 개인정보 걱정 없이 체험 가능", "관리자 화면으로 운영 업무까지 시연"]),
+    cols = [("활용 방안", ACCENT, ["여행사 상품 소개·예약 흐름을 시연하는 포트폴리오", "가상 데이터라 개인정보 걱정 없이 체험 가능", "관리자 화면으로 운영 업무까지 시연"]),
             ("기대 효과", BLUE, ["항공·투어·호텔을 한 화면 흐름에서 비교·선택", "휴대폰에서 QR로 예약을 바로 확인(모바일 탑승권)", "운영자는 상품 노출·문의·체크인을 한 곳에서 관리"]),
             ("확장성 (2단계)", DARK, ["날짜별 재고와 동시 예약 제어(낙관적 락)", "실제 결제 연동(테스트 모드), 후기·찜", "'나도 감' 동행 모집, Redis 캐시, Docker·CI 배포"])]
     cw = 5.5
@@ -476,9 +536,9 @@ def flow_chips(s, x, y, labels, color, cw=2.15, ch=0.95, gap=0.35, size=15, row_
 def slide_scenario(prs, n):
     s = blank(prs)
     header(s, "CORE SCENARIO", "핵심 사용자 시나리오", "사용자는 고르고 담아 결제하고, 관리자는 상품과 예약을 운영합니다")
-    pill(s, MX, 2.75, 5.2, 0.62, "A. 사용자 · 여행을 고르고 예약한다", fill=ORANGE, size=17)
-    flow_chips(s, MX, 3.6, ["지구본·\n특별전 보기", "여행지\n선택", "출발지·\n항공편 선택", "투어·호텔·\n크루즈 보기"], ORANGE, cw=3.7, ch=1.1, gap=0.45, size=17)
-    flow_chips(s, MX, 5.05, ["장바구니\n담기", "모의 결제", "예약 확인\n(QR)", "문의하기"], ORANGE, cw=3.7, ch=1.1, gap=0.45, size=17)
+    pill(s, MX, 2.75, 5.2, 0.62, "A. 사용자 · 여행을 고르고 예약한다", fill=ACCENT, size=17)
+    flow_chips(s, MX, 3.6, ["지구본·\n특별전 보기", "여행지\n선택", "출발지·\n항공편 선택", "투어·호텔·\n크루즈 보기"], ACCENT, cw=3.7, ch=1.1, gap=0.45, size=17)
+    flow_chips(s, MX, 5.05, ["장바구니\n담기", "모의 결제", "예약 확인\n(QR)", "문의하기"], ACCENT, cw=3.7, ch=1.1, gap=0.45, size=17)
     pill(s, MX, 6.75, 5.6, 0.62, "B. 관리자 · 상품과 예약을 운영한다", fill=BLUE, size=17)
     flow_chips(s, MX, 7.6, ["로그인\n(/admin)", "상품 등록·\n수정·삭제", "노출 중지·\n재개", "팝업·문의\n답변", "QR 체크인"], BLUE, cw=3.05, ch=1.1, gap=0.5, size=17)
     text(s, MX, 9.2, W - 2 * MX, 0.6, "비회원은 둘러보기만 가능하고, 장바구니·결제·내 예약·문의는 로그인이 필요합니다. 관리자와 사용자는 계정 테이블이 분리되어 있습니다.",
@@ -490,9 +550,9 @@ def slide_scenario(prs, n):
 def slide_demo_flow(prs, n):
     s = blank(prs)
     header(s, "PROJECT DEMO", "시연 흐름", "화면 캡처로 3묶음을 따라가며 시연합니다")
-    cols = [("① 메인 · 해외 여행", ORANGE, "cap03_travel-list.jpg", ["메인 지구본 · 특별전", "해외 여행지 100곳 카드", "여행지 → 출발지 → 항공편", "지구본에 경로 강조"]),
+    cols = [("① 메인 · 해외 여행", ACCENT, "cap03_travel-list.jpg", ["메인 지구본 · 특별전", "해외 여행지 100곳 카드", "여행지 → 출발지 → 항공편", "지구본에 경로 강조"]),
             ("② 투어 · 장바구니 · 결제", BLUE, "cap09_cart-items.jpg", ["투어 기간 옵션 · 호텔", "항공권·투어·호텔 담기", "서버가 가격 재계산", "모의 결제 · 좌석 차감"]),
-            ("③ 예약 · QR · 관리자", ORANGE, "cap11_reservation-qr.jpg", ["예약 번호 · 모바일 QR", "관리자 체크인", "상품 관리 · 노출 관리", "390px 모바일 화면"])]
+            ("③ 예약 · QR · 관리자", ACCENT, "cap11_reservation-qr.jpg", ["예약 번호 · 모바일 QR", "관리자 체크인", "상품 관리 · 노출 관리", "390px 모바일 화면"])]
     cw = 5.5
     for i, (t, col, img, items) in enumerate(cols):
         x = MX + i * (cw + 0.45)
@@ -513,7 +573,7 @@ def demo_slide(prs, n, no, title, sub, steps, imgs):
     header(s, "PROJECT DEMO · %d/3" % no, title, sub)
     for i, (ttl, desc) in enumerate(steps):
         y = 2.9 + i * 1.95
-        pill(s, MX, y, 0.6, 0.6, str(i + 1), fill=ORANGE if i % 2 == 0 else BLUE, size=18)
+        pill(s, MX, y, 0.6, 0.6, str(i + 1), fill=ACCENT if i % 2 == 0 else BLUE, size=18)
         text(s, MX + 0.85, y - 0.05, 4.2, 0.5, ttl, size=20, bold=True)
         text(s, MX + 0.85, y + 0.5, 4.5, 1.3, desc, size=13, color=MUTED, spacing=1.25)
     iw = 5.7
@@ -523,7 +583,7 @@ def demo_slide(prs, n, no, title, sub, steps, imgs):
         x = gx0 + (i % 2) * (iw + 0.35)
         y = gy0 + (i // 2) * (ih + 0.75)
         pic(s, name, x, y, w=iw)
-        pill(s, x + 0.15, y + 0.15, 0.5, 0.5, str(i + 1), fill=ORANGE if i % 2 == 0 else BLUE, size=15)
+        pill(s, x + 0.15, y + 0.15, 0.5, 0.5, str(i + 1), fill=ACCENT if i % 2 == 0 else BLUE, size=15)
         text(s, x, y + ih + 0.08, iw, 0.45, steps[i][0], size=14, bold=True, color=MUTED)
     footer(s, n)
     return s
@@ -560,7 +620,7 @@ def box(s, x, y, w, h, title, sub=None, fill=CARD, tcolor=INK, line_c=None, tsiz
     rect(s, x, y, w, h, fill=fill, line=line_c, radius=0.14)
     if sub:
         text(s, x + 0.1, y + 0.1, w - 0.2, 0.5, title, size=tsize, bold=bold, color=tcolor, align=PP_ALIGN.CENTER)
-        text(s, x + 0.12, y + 0.6, w - 0.24, h - 0.65, sub, size=ssize, color=tcolor if fill in (DARK, ORANGE, BLUE) else MUTED, align=PP_ALIGN.CENTER, spacing=1.2)
+        text(s, x + 0.12, y + 0.6, w - 0.24, h - 0.65, sub, size=ssize, color=tcolor if fill in (DARK, ACCENT, BLUE) else MUTED, align=PP_ALIGN.CENTER, spacing=1.2)
     else:
         text(s, x + 0.1, y, w - 0.2, h, title, size=tsize, bold=bold, color=tcolor, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, spacing=1.1)
 
@@ -573,8 +633,8 @@ def slide_architecture(prs, n):
     box(s, MX, 5.1, 3.0, 1.5, "관리자 브라우저", "/admin/** 운영 화면", fill=CARD, line_c=LINE)
     # 가운데: 앱
     ax, ay, aw, ah = 5.2, 2.7, 8.6, 5.65
-    rect(s, ax, ay, aw, ah, fill=WHITE, line=ORANGE, radius=0.2, lw=2.5)
-    text(s, ax + 0.4, ay + 0.15, aw - 0.8, 0.5, "Spring Boot 앱 (Java 17 · 1개)", size=18, bold=True, color=ORANGE_INK)
+    rect(s, ax, ay, aw, ah, fill=WHITE, line=ACCENT, radius=0.2, lw=2.5)
+    text(s, ax + 0.4, ay + 0.15, aw - 0.8, 0.5, "Spring Boot 앱 (Java 17 · 1개)", size=18, bold=True, color=ACCENT_INK)
     box(s, ax + 0.35, ay + 0.85, aw - 0.7, 1.1, "Spring Security 필터 체인 2개", "사용자 경로 · /admin/** 관리자 경로 (BCrypt)", fill=DARK, tcolor=WHITE, tsize=15, ssize=12.5)
     box(s, ax + 0.35, ay + 2.15, 2.55, 1.3, "Controller", "도메인 패키지 17개\n(travel·tour·cart …)", fill=CARD, tsize=15)
     box(s, ax + 3.0, ay + 2.15, 2.55, 1.3, "Service", "결제·좌석 차감\n서버 가격 재계산", fill=CARD, tsize=15)
@@ -588,7 +648,7 @@ def slide_architecture(prs, n):
     box(s, 5.2, 8.7, 4.1, 1.3, "외부 CDN (jsDelivr)", "globe.gl · 지구 텍스처", fill=CARD, line_c=LINE, tsize=15)
     box(s, 9.7, 8.7, 4.1, 1.3, "Wikimedia Commons", "사진은 미리 내려받아 저장\n(저작자·라이선스 표기)", fill=CARD, line_c=LINE, tsize=15, ssize=12)
     # 화살표
-    line(s, MX + 3.0, 3.95, ax, 3.95, color=ORANGE, width=3, arrow=True)
+    line(s, MX + 3.0, 3.95, ax, 3.95, color=ACCENT, width=3, arrow=True)
     line(s, MX + 3.0, 5.85, ax, 5.85, color=BLUE, width=3, arrow=True)
     line(s, ax + aw, 4.2, 15.2, 4.2, color=BLUE, width=3, arrow=True)
     line(s, ax + aw, 6.6, 15.2, 6.6, color=LINE, width=3, arrow=True)
@@ -612,7 +672,7 @@ def slide_menu(prs, n):
     x0 = (W - (cw * 8 + gap * 7)) / 2
     for i, (m, subs) in enumerate(menus):
         x = x0 + i * (cw + gap)
-        col = ORANGE if i % 2 == 0 else BLUE
+        col = ACCENT if i % 2 == 0 else BLUE
         rect(s, x, 2.75, cw, 0.9, fill=col, radius=0.14)
         text(s, x, 2.75, cw, 0.9, m, size=16, bold=True, color=WHITE, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
         for j, t in enumerate(subs):
@@ -673,7 +733,7 @@ def slide_erd(prs, n):
             cx, cy = pos[child]
             px, py = pos[parent]
             line(s, cx + bw / 2, cy + bh / 2, px + bw / 2, py + bh / 2, color=RGBColor(0xC9, 0xC2, 0xB5), width=1.25)
-    colors = {"A": ORANGE, "U": BLUE, "M": SLATE}
+    colors = {"A": ACCENT, "U": BLUE, "M": SLATE}
     for t, (x, y) in pos.items():
         col = colors[ERD_AREA.get(t, "M")]
         rect(s, x, y, bw, bh, fill=WHITE, line=col, radius=0.1, lw=1.75)
@@ -681,7 +741,7 @@ def slide_erd(prs, n):
         text(s, x + 0.12, y + 0.17, bw - 0.24, 0.45, t, size=14, bold=True, color=INK, font=MONO)
         text(s, x + 0.12, y + 0.6, bw - 0.24, 0.4, "%s · %d개 컬럼" % (ERD_SHORT.get(t, ""), ncols.get(t, 0)), size=12, color=MUTED)
     ly = 9.95
-    for i, (lab, col) in enumerate([("[A] 관리자 영역", ORANGE), ("[U] 사용자 영역", BLUE), ("[M] 운영 마스터", SLATE)]):
+    for i, (lab, col) in enumerate([("[A] 관리자 영역", ACCENT), ("[U] 사용자 영역", BLUE), ("[M] 운영 마스터", SLATE)]):
         rect(s, 1.0 + i * 3.4, ly + 0.08, 0.35, 0.22, fill=col, radius=0.05)
         text(s, 1.5 + i * 3.4, ly, 2.8, 0.4, lab, size=13, color=INK)
     line(s, 11.4, ly + 0.2, 12.2, ly + 0.2, color=RGBColor(0xC9, 0xC2, 0xB5), width=1.5)
@@ -699,7 +759,7 @@ def slide_spec_summary(prs, n):
     cw = 3.2
     for i, (lab, v, u) in enumerate(nums):
         x = MX + i * (cw + 0.35)
-        col = ORANGE if i % 2 == 0 else BLUE
+        col = ACCENT if i % 2 == 0 else BLUE
         rect(s, x, 2.8, cw, 2.1, fill=CARD, radius=0.16)
         rect(s, x, 3.1, 0.09, 1.5, fill=col)
         text(s, x + 0.35, 3.0, cw - 0.5, 1.1, [(str(v), {"size": 54, "bold": True, "color": col})], size=54)
@@ -718,7 +778,7 @@ def slide_spec_summary(prs, n):
         x = MX + col * 8.8
         y = 5.85 + row * 0.6
         text(s, x, y, 2.4, 0.5, k, size=14, color=INK)
-        rect(s, x + 2.5, y + 0.07, 4.6 * v / mx, 0.3, fill=ORANGE if col == 0 else BLUE, radius=0.08)
+        rect(s, x + 2.5, y + 0.07, 4.6 * v / mx, 0.3, fill=ACCENT if col == 0 else BLUE, radius=0.08)
         text(s, x + 2.5 + 4.6 * v / mx + 0.12, y, 0.8, 0.5, str(v), size=14, bold=True, color=INK)
     footer(s, n)
     return s
@@ -757,13 +817,13 @@ def slide_wbs(prs, n):
     text(s, lx + 0.2, 2.75, lw, 0.7, "작업", size=15, bold=True, color=WHITE, anchor=MSO_ANCHOR.MIDDLE)
     for i, d in enumerate(days):
         text(s, dx + i * dw, 2.75, dw, 0.7, d, size=14, bold=True, color=WHITE, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
-    rows = [("1.0  프로젝트 명세서 (요구·기능·화면·API·테이블)", 0, 2, ORANGE, "완료"),
-            ("2.0  설계 (기능정의서·DB·더미데이터)", 0, 1, ORANGE, "완료"),
+    rows = [("1.0  프로젝트 명세서 (요구·기능·화면·API·테이블)", 0, 2, ACCENT, "완료"),
+            ("2.0  설계 (기능정의서·DB·더미데이터)", 0, 1, ACCENT, "완료"),
             ("3.1~3.4  골격·메인·특별전·해외 여행", 0, 0, BLUE, "완료"),
             ("3.5~3.18  계정·관리자·팝업·문의·투어·국내·호텔·결제·QR", 1, 1, BLUE, "완료"),
             ("3.19~3.24  지구본 개선·100곳 확장·관리자 CRUD·좌석 차감", 1, 1, BLUE, "완료"),
             ("3.25~3.27  라이트 테마·사진 카드·성공 색", 2, 2, BLUE, "완료"),
-            ("4.0  화면·서버 점검 (장바구니~체크인, 390px)", 1, 2, ORANGE, "완료"),
+            ("4.0  화면·서버 점검 (장바구니~체크인, 390px)", 1, 2, ACCENT, "완료"),
             ("5.0  README·명세서(완료) · 발표 PPT", 2, 6, SLATE, "진행 중")]
     rh = 0.78
     for r, (lab, a, b, col, st) in enumerate(rows):
@@ -788,7 +848,7 @@ def slide_usecase(prs, n):
     s = blank(prs)
     header(s, "USE CASE", "유스케이스", "액터 3종(비회원 · 사용자 · 관리자)이 쓰는 기능")
     rows = [("비회원", MUTED, ["지구본 보기", "여행지·항공편 조회", "투어·국내여행 조회", "호텔·크루즈 조회", "특별전·베스트셀러", "사진 출처 보기"]),
-            ("사용자", ORANGE, ["회원가입·로그인", "장바구니 담기", "모의 결제", "내 예약·QR", "고객문의 등록", "계정 관리·탈퇴"]),
+            ("사용자", ACCENT, ["회원가입·로그인", "장바구니 담기", "모의 결제", "내 예약·QR", "고객문의 등록", "계정 관리·탈퇴"]),
             ("관리자", BLUE, ["회원 이용 정지", "상품 등록·수정·삭제", "상품 노출 중지", "팝업 관리", "문의 답변", "예약 체크인"])]
     rect(s, 3.4, 2.65, 15.3, 7.45, fill=CARD, line=CARD_LINE, radius=0.15, lw=2)
     text(s, 3.6, 2.7, 6, 0.4, "나도 감 시스템", size=13, bold=True, color=MUTED)
@@ -816,15 +876,15 @@ def slide_workflow(prs, n):
     x0 = (W - (cw * 7 + gap * 6)) / 2
     for i, (t, b) in enumerate(steps):
         x = x0 + i * (cw + gap)
-        col = ORANGE if i < 5 else BLUE
+        col = ACCENT if i < 5 else BLUE
         rect(s, x, 3.0, cw, 4.6, fill=CARD, radius=0.16)
         pill(s, x + 0.55, 3.25, 1.0, 0.55, "%02d" % (i + 1), fill=col, size=15)
         text(s, x + 0.1, 4.05, cw - 0.2, 0.7, t, size=18, bold=True, color=INK, align=PP_ALIGN.CENTER, spacing=1.1)
         text(s, x + 0.12, 4.95, cw - 0.24, 2.5, b, size=13.5, color=MUTED, align=PP_ALIGN.CENTER, spacing=1.35)
         if i < 6:
             line(s, x + cw + 0.03, 5.3, x + cw + gap - 0.03, 5.3, color=col, width=3, arrow=True)
-    rect(s, MX, 8.2, W - 2 * MX, 1.6, fill=RGBColor(0xFD, 0xEC, 0xEA), line=ORANGE_INK, radius=0.14, lw=1.5)
-    text(s, MX + 0.5, 8.35, 4, 0.5, "예외 처리", size=15, bold=True, color=ORANGE_INK)
+    rect(s, MX, 8.2, W - 2 * MX, 1.6, fill=RGBColor(0xFD, 0xEC, 0xEA), line=CORAL, radius=0.14, lw=1.5)
+    text(s, MX + 0.5, 8.35, 4, 0.5, "예외 처리", size=15, bold=True, color=CORAL)
     text(s, MX + 0.5, 8.85, W - 2 * MX - 1, 0.9,
          "좌석이 하나라도 부족하거나 판매가 중지되면 결제 전체를 거절하고 트랜잭션을 되돌립니다(이미 줄인 좌석도 원래대로). "
          "노출이 중지된 상품·운항하지 않는 요일·잔여 좌석 초과는 담는 단계에서 거절합니다.", size=15, color=INK, spacing=1.35)
@@ -846,14 +906,14 @@ def slide_packages(prs, n):
     for i, (p, d) in enumerate(PKGS):
         x = x0 + (i % 6) * (cw + gx)
         y = 2.75 + (i // 6) * (ch + gy)
-        col = ORANGE if (i // 6 + i % 6) % 2 == 0 else BLUE
+        col = ACCENT if (i // 6 + i % 6) % 2 == 0 else BLUE
         rect(s, x, y, cw, ch, fill=CARD, radius=0.14)
         rect(s, x, y, cw, 0.1, fill=col)
         text(s, x + 0.2, y + 0.22, cw - 0.4, 0.5, p, size=17, bold=True, color=INK, font=MONO)
         text(s, x + 0.2, y + 0.78, cw - 0.4, 0.5, d, size=14, color=MUTED)
     # 읽기/쓰기 분리 설명
     y = 8.0
-    card(s, MX, y, 8.5, 1.9, "읽기: JdbcClient + record", "화면용 조회는 SQL을 직접 쓰고 record 로 받습니다. 정렬·필터 값은 화이트리스트로 검증합니다.", accent=ORANGE, tsize=19, bsize=15)
+    card(s, MX, y, 8.5, 1.9, "읽기: JdbcClient + record", "화면용 조회는 SQL을 직접 쓰고 record 로 받습니다. 정렬·필터 값은 화이트리스트로 검증합니다.", accent=ACCENT, tsize=19, bsize=15)
     card(s, MX + 8.9, y, 8.5, 1.9, "쓰기: Spring Data JPA", "계정·예약·문의처럼 저장이 중요한 쓰기는 JPA 엔티티와 트랜잭션으로 처리합니다.", accent=BLUE, tsize=19, bsize=15)
     footer(s, n)
     return s
@@ -882,8 +942,8 @@ def slide_git(prs, n):
     # 왼쪽: 브랜치 흐름
     box(s, MX, 2.9, 3.3, 1.2, "main", "안정 버전 (최종 병합)", fill=DARK, tcolor=WHITE, tsize=20, ssize=13)
     box(s, MX, 4.7, 3.3, 1.2, "dev", "통합 브랜치", fill=BLUE, tcolor=WHITE, tsize=20, ssize=13)
-    box(s, MX, 6.5, 3.3, 1.2, "feature/*", "기능별 개발", fill=ORANGE, tcolor=WHITE, tsize=20, ssize=13)
-    line(s, MX + 1.65, 6.5, MX + 1.65, 5.9, color=ORANGE, width=3, arrow=True)
+    box(s, MX, 6.5, 3.3, 1.2, "feature/*", "기능별 개발", fill=ACCENT, tcolor=WHITE, tsize=20, ssize=13)
+    line(s, MX + 1.65, 6.5, MX + 1.65, 5.9, color=ACCENT, width=3, arrow=True)
     line(s, MX + 1.65, 4.7, MX + 1.65, 4.1, color=BLUE, width=3, arrow=True, dash=True)
     text(s, MX, 7.9, 3.4, 0.9, "feature → dev: 빠른 병합(fast-forward)\ndev → main: 최종 점검 후", size=12.5, color=MUTED, spacing=1.3)
     # 가운데: 실제 브랜치
@@ -898,7 +958,7 @@ def slide_git(prs, n):
         text(s, x, y, 2.6, 0.7, nm, size=12, color=INK, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, font=MONO)
     # 오른쪽: 커밋 컨벤션
     rect(s, 14.0, 2.9, 4.7, 6.7, fill=CARD, radius=0.18)
-    text(s, 14.3, 3.1, 4.2, 0.5, "커밋 컨벤션", size=18, bold=True, color=ORANGE_INK)
+    text(s, 14.3, 3.1, 4.2, 0.5, "커밋 컨벤션", size=18, bold=True, color=ACCENT_INK)
     text(s, 14.3, 3.7, 4.2, 0.9, "타입(범위): 제목", size=22, bold=True, color=INK, font=MONO)
     text(s, 14.3, 4.5, 4.2, 4.9,
          ["feat · fix · refactor · style", "docs · test · chore", "",
@@ -908,86 +968,48 @@ def slide_git(prs, n):
     return s
 
 
-def slide_core1(prs, n):
+def slide_core_all(prs, n):
+    """핵심 구현 한 장: 지구본·결제 좌석 차감·사진 카드를 세 칸으로 보여 준다."""
     s = blank(prs)
-    header(s, "CORE DESIGN · CODE ①", "핵심 구현 ① 지구본", "기본 컨트롤을 끄고 회전을 직접 계산해, 어느 방향으로 돌려도 끊김 없이 돕니다")
-    card(s, MX, 2.8, 6.6, 2.0, "경로: 선 + 불빛 겹치기", "같은 좌표로 주황 선과 그 위를 흐르는 불빛을 함께 그려 경로가 살아 있는 것처럼 보입니다.", accent=ORANGE, tsize=19, bsize=14.5)
-    card(s, MX, 5.0, 6.6, 2.2, "회전: 직접 계산", "놓은 방향 그대로 관성을 주고(최대 1200도/초) 3초에 걸쳐 평소 속도(15도/초)로 돌아옵니다.", accent=BLUE, tsize=19, bsize=14.5)
-    card(s, MX, 7.4, 6.6, 2.0, "경로 데이터: JSON API", "GET /api/globe/routes 가 도시 100곳 중 무작위 경로 60개를 내려줍니다.", accent=ORANGE, tsize=19, bsize=14.5)
-    code_block(s, 8.3, 2.8, 10.4, 6.6, [
-        "// home-globe.js",
-        "var CRUISE    = 15 * RAD;     // 평소 회전 속도(15도/초)",
-        "var FLICK_MAX = 1200 * RAD;   // 던질 때 최대 속도",
-        "",
-        "var controls = globe.controls();",
-        "controls.enabled = false;     // 기본 회전은 끄고 직접 처리",
-        "",
-        "globe.pathsData(lines)        // 선 + 불빛을 같은 좌표로",
-        "  .pathColor(function (d) {",
-        "    if (d.light) return ['rgba(255,214,140,0)', 'rgba(255,252,240,1)'];",
-        "    if (d.glow)  return ['rgba(255,90,54,0)', 'rgba(255,140,100,.7)'];",
-        "    return 'rgba(255, 90, 54, 0.5)';   // 주황 선",
-        "  })",
-        "  .pathDashAnimateTime(function (d) {",
-        "    return 3200 + d.total * 2400;      // 불빛이 흐르는 시간",
-        "  });",
-    ], size=13, title="src/main/resources/static/js/home-globe.js (발췌)")
-    footer(s, n)
-    return s
-
-
-def slide_core2(prs, n):
-    s = blank(prs)
-    header(s, "CORE DESIGN · CODE ②", "핵심 구현 ② 결제와 좌석 차감", "마지막 남은 좌석을 두 사람이 동시에 사도 좌석이 음수가 되지 않게 했습니다")
-    card(s, MX, 2.8, 6.6, 2.0, "서버가 가격을 계산", "장바구니와 결제의 단가는 클라이언트 값이 아니라 DB 값으로 다시 계산해 저장합니다.", accent=ORANGE, tsize=19, bsize=14.5)
-    card(s, MX, 5.0, 6.6, 2.2, "조건부 UPDATE", "seats_left >= 인원 조건으로 한 번에 차감하고, 판매 중인 항공편만 대상으로 합니다.", accent=BLUE, tsize=19, bsize=14.5)
-    card(s, MX, 7.4, 6.6, 2.0, "하나라도 부족하면 전체 취소", "예외로 트랜잭션을 되돌려 이미 줄인 좌석도 원래대로 돌아갑니다.", accent=ORANGE, tsize=19, bsize=14.5)
-    code_block(s, 8.3, 2.8, 10.4, 6.6, [
-        "// CartService.reserveFlightSeats (발췌)",
-        "int n = jdbc.sql(\"\"\"",
-        "    UPDATE flight_fare",
-        "       SET seats_left = seats_left - :n, version = version + 1",
-        "     WHERE flight_id = :flight AND cabin_class = :cabin",
-        "       AND seats_left >= :n          -- 부족하면 0건",
-        "       AND EXISTS (SELECT 1 FROM flight f",
-        "                    WHERE f.flight_id = flight_fare.flight_id",
-        "                      AND f.status = 'ON_SALE')",
-        "    \"\"\").param(\"n\", need).param(\"flight\", flightId)",
-        "      .param(\"cabin\", cabin).update();",
-        "",
-        "if (n == 0) {                        // 좌석 부족·판매 중지",
-        "    throw new IllegalArgumentException(title + \" 남은 좌석이 부족해요.\");",
-        "}                                    // → 트랜잭션 전체 롤백",
-    ], size=13, title="src/main/java/com/nadogam/cart/CartService.java (발췌)")
-    footer(s, n)
-    return s
-
-
-def slide_core3(prs, n):
-    s = blank(prs)
-    header(s, "CORE DESIGN · CODE ③", "핵심 구현 ③ 여행지 사진 카드", "DB와 쿼리를 건드리지 않고, 파일만 읽어 카드에 사진과 문구를 붙였습니다")
-    card(s, MX, 2.8, 6.6, 2.0, "파일 기반 DestPhotos", "info.json(명소·특산)과 credits.json(받은 사진·출처)을 읽는 빈 하나가 전부 처리합니다.", accent=ORANGE, tsize=19, bsize=14.5)
-    card(s, MX, 5.0, 6.6, 2.2, "사진이 없으면 그라데이션", "style() 이 빈 문자열을 돌려주면 기존 그라데이션 카드가 그대로 보입니다(댈러스).", accent=BLUE, tsize=19, bsize=14.5)
-    card(s, MX, 7.4, 6.6, 2.0, "출처는 반드시 표기", "저작자·라이선스를 상세 머리글과 /photo-credits 화면에 보여 줍니다(CC BY-SA 등).", accent=ORANGE, tsize=19, bsize=14.5)
-    code_block(s, 8.3, 2.8, 10.4, 6.6, [
-        "// DestPhotos.java (발췌) — 템플릿에서 @destPhotos 로 부름",
-        "public String style(String kind, long id) {",
-        "    return credits.containsKey(key(kind, id))",
-        "        ? \";--photo:url(/img/dest/\" + key(kind, id) + \".jpg)\"",
-        "        : \"\";                    // 사진이 없으면 아무것도 붙이지 않는다",
-        "}",
-        "",
-        "/* CSS: 사진 레이어를 그라데이션 위에 얹는다 */",
-        ".dest-card {",
-        "  background: var(--photo, linear-gradient(transparent, transparent))",
-        "              center / cover no-repeat,",
-        "              linear-gradient(135deg, var(--c1), var(--c2));",
-        "}",
-        "",
-        "<!-- Thymeleaf -->",
-        "th:style=\"|--c1:${d.from()};--c2:${d.to()}",
-        "   ${@destPhotos.style('overseas', d.destinationId())}|\"",
-    ], size=12.5, title="DestPhotos.java · travel.css · travel/index.html (발췌)")
+    header(s, "CORE DESIGN · CODE", "핵심 구현 3가지", "각 기능의 핵심만 코드로 발췌했습니다")
+    items = [
+        ("01", "지구본: 직접 계산하는 회전", "기본 컨트롤을 끄고 관성·감속을 직접 계산해 어느 방향으로 돌려도 끊김 없이 돕니다. 선과 불빛을 겹쳐 경로가 흐르게 그립니다.",
+         "home-globe.js", [
+             "var CRUISE = 15 * RAD;",
+             "  // 평소 회전: 15도/초",
+             "var FLICK_MAX = 1200 * RAD;",
+             "  // 던질 때 최대: 1200도/초",
+             "controls.enabled = false;",
+             "  // 기본 회전은 끄고 직접 계산",
+             "globe.pathsData(lines)",
+             "  // 선 + 흐르는 불빛"]),
+        ("02", "결제: 조건부 UPDATE로 좌석 차감", "단가는 서버가 DB 값으로 다시 계산하고, seats_left ≥ 인원 조건으로 한 번에 차감합니다. 하나라도 부족하면 전체를 되돌립니다.",
+         "CartService.java", [
+             "UPDATE flight_fare",
+             "   SET seats_left = seats_left - :n",
+             " WHERE flight_id = :flight",
+             "   AND cabin_class = :cabin",
+             "   AND seats_left >= :n",
+             "  -- 부족하면 0건",
+             "if (n == 0) throw new Exception();",
+             "  // 트랜잭션 전체 롤백"]),
+        ("03", "사진 카드: 파일 기반 DestPhotos", "DB·쿼리는 그대로 두고 info.json·credits.json 만 읽어 사진과 문구를 붙입니다. 사진이 없으면 그라데이션이 그대로 보이고 출처는 /photo-credits 에 표기합니다.",
+         "DestPhotos.java", [
+             "public String style(String kind,",
+             "                    long id) {",
+             "  return credits.containsKey(...)",
+             "    ? \";--photo:url(/img/dest/\" + ...",
+             "    : \"\";",
+             "}",
+             "// 사진이 없으면 빈 문자열",
+             "// → 기존 그라데이션 카드 유지"]),
+    ]
+    cw, gap = (W - 2 * MX - 0.7) / 3, 0.35
+    for i, (no, t, body, fname, code) in enumerate(items):
+        x = MX + i * (cw + gap)
+        col = [ACCENT, BLUE, ACCENT][i]
+        card(s, x, 2.7, cw, 3.35, t, body, accent=col, num=no, tsize=17, bsize=13.5)
+        code_block(s, x, 6.25, cw, 3.95, code, size=12.5, title=fname)
     footer(s, n)
     return s
 
@@ -1000,7 +1022,7 @@ def slide_tests(prs, n):
     header(s, "VERIFICATION", "테스트 · 검증 결과", "자동 테스트 %d개 통과(실패 %d) + 브라우저로 핵심 흐름을 직접 점검했습니다" % (total, fails))
     rect(s, MX, 2.8, 4.6, 3.1, fill=DARK, radius=0.2)
     text(s, MX, 3.0, 4.6, 1.7, str(total), size=96, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
-    text(s, MX, 4.9, 4.6, 0.6, "테스트 통과 · 실패 %d" % fails, size=18, bold=True, color=RGBColor(0xFF, 0x9A, 0x7A), align=PP_ALIGN.CENTER)
+    text(s, MX, 4.9, 4.6, 0.6, "테스트 통과 · 실패 %d" % fails, size=18, bold=True, color=ACCENT_LIGHT, align=PP_ALIGN.CENTER)
     mx = max(t[1] for t in tests)
     cols = 2
     per = (len(tests) + cols - 1) // cols
@@ -1009,7 +1031,7 @@ def slide_tests(prs, n):
         x = 6.3 + c * 6.8
         y = 2.75 + r * 0.43
         text(s, x, y, 2.5, 0.4, name, size=11.5, color=INK, font=MONO)
-        rect(s, x + 2.55, y + 0.08, 3.0 * cnt / mx, 0.24, fill=ORANGE if c == 0 else BLUE, radius=0.05)
+        rect(s, x + 2.55, y + 0.08, 3.0 * cnt / mx, 0.24, fill=ACCENT if c == 0 else BLUE, radius=0.05)
         text(s, x + 2.65 + 3.0 * cnt / mx, y, 0.6, 0.4, str(cnt), size=11.5, bold=True, color=INK)
     text(s, MX, 6.75, 8, 0.5, "화면 점검 (11/21, 브라우저)", size=18, bold=True)
     checks = [("담기 → 결제 → 예약", "금액 일치\n(1,780,000 + 1,580,000×2 = 4,940,000)"), ("좌석 차감", "일반석 잔여 좌석\n58석 → 56석"),
@@ -1017,7 +1039,7 @@ def slide_tests(prs, n):
     cw = 4.0
     for i, (t, b) in enumerate(checks):
         x = MX + i * (cw + 0.4)
-        card(s, x, 7.4, cw, 2.9, t, b, accent=ORANGE if i % 2 == 0 else BLUE, tsize=16, bsize=13)
+        card(s, x, 7.4, cw, 2.9, t, b, accent=ACCENT if i % 2 == 0 else BLUE, tsize=16, bsize=13)
     footer(s, n)
     return s
 
@@ -1053,7 +1075,7 @@ def slide_result(prs, n):
     for i, (v, l) in enumerate(stats):
         x = MX + i * (cw + 0.35)
         rect(s, x, 8.1, cw, 1.8, fill=CARD, radius=0.16)
-        text(s, x, 8.2, cw, 1.0, v, size=44, bold=True, color=ORANGE if i % 2 == 0 else BLUE, align=PP_ALIGN.CENTER)
+        text(s, x, 8.2, cw, 1.0, v, size=44, bold=True, color=ACCENT if i % 2 == 0 else BLUE, align=PP_ALIGN.CENTER)
         text(s, x, 9.2, cw, 0.5, l, size=14, color=INK, align=PP_ALIGN.CENTER)
     footer(s, n)
     return s
@@ -1063,7 +1085,7 @@ def slide_next(prs, n):
     s = blank(prs)
     header(s, "LIMITATIONS & NEXT", "한계 · 개선 계획 · 향후 확장", "지금의 한계를 알고, 2단계에서 보완할 계획입니다")
     rect(s, MX, 2.8, 8.4, 6.9, fill=CARD, radius=0.18)
-    text(s, MX + 0.5, 3.0, 7, 0.5, "현재의 한계", size=22, bold=True, color=ORANGE_INK)
+    text(s, MX + 0.5, 3.0, 7, 0.5, "현재의 한계", size=22, bold=True, color=ACCENT_INK)
     bullets(s, MX + 0.5, 3.7, 7.5, 6.0, ["결제는 모의 처리(카드 정보 미수집)", "항공권 재고가 날짜별이 아니라 항공편 단위", "댈러스 사진이 없어 그라데이션 카드", "지구본은 인터넷(CDN)이 필요", "실제 휴대폰 QR 스캔·MySQL 실행은 미확인"], size=19, gap=1.75)
     rect(s, MX + 8.9, 2.8, 8.5, 6.9, fill=CARD, radius=0.18)
     text(s, MX + 9.4, 3.0, 7, 0.5, "2단계 계획", size=22, bold=True, color=BLUE)
@@ -1079,9 +1101,9 @@ def slide_next(prs, n):
 
 def slide_qna(prs, n):
     s = blank(prs, BG)
-    rect(s, 0, 0, 0.5, H, fill=ORANGE)
+    rect(s, 0, 0, 0.5, H, fill=ACCENT)
     text(s, 1.6, 3.2, 9, 3, "Q & A", size=130, bold=True, color=INK)
-    text(s, 1.7, 6.6, 9, 0.8, "질의응답", size=34, bold=True, color=ORANGE_INK)
+    text(s, 1.7, 6.6, 9, 0.8, "질의응답", size=34, bold=True, color=ACCENT_INK)
     text(s, 1.7, 7.5, 9, 0.6, "궁금한 점을 편하게 물어봐 주세요", size=18, color=MUTED)
     pic(s, "mascot.png", 11.0, 2.9, w=7.4, border=False)
     footer(s, n, strip=False)
@@ -1090,9 +1112,9 @@ def slide_qna(prs, n):
 
 def slide_thanks(prs, n):
     s = blank(prs, DARK)
-    rect(s, 0, 0, 0.5, H, fill=ORANGE)
+    rect(s, 0, 0, 0.5, H, fill=ACCENT)
     text(s, 1.6, 3.4, 12, 2, "THANK YOU", size=96, bold=True, color=WHITE)
-    text(s, 1.7, 5.6, 12, 0.9, "감사합니다", size=40, bold=True, color=RGBColor(0xFF, 0x9A, 0x7A))
+    text(s, 1.7, 5.6, 12, 0.9, "감사합니다", size=40, bold=True, color=ACCENT_LIGHT)
     text(s, 1.7, 7.0, 12, 0.6, "나도 감 (nado_gam) — 4차 개인 프로젝트", size=20, color=RGBColor(0xC9, 0xCE, 0xDD))
     text(s, 1.7, 7.7, 12, 0.6, "발표자 이윤호 · 2026년 11월 25일", size=18, color=RGBColor(0x9A, 0xA3, 0xBA))
     text(s, 1.7, 8.6, 14, 0.6, "github.com/ho8566z/nado_gam  ·  github.com/ho8566z/nado_gam_word", size=15, color=RGBColor(0x9A, 0xA3, 0xBA))
@@ -1104,15 +1126,16 @@ SLIDES = [
     slide_cover,                                                                              # 1
     slide_index,                                                                              # 2
     lambda p, n: slide_part(p, n, "01", "PART 1 · PLAN", "프로젝트 기획", ["프로젝트 소개", "주제 선정 배경 · 목표", "벤치마킹 · 차별점", "활용 방안 · 기대 효과"]),   # 3
-    slide_intro, slide_background, slide_goals, slide_benchmark, slide_difference, slide_effect,   # 4-9
+    slide_intro, slide_background, slide_goals,                                                 # 4-6
+    slide_bench_all, slide_difference, slide_effect,                                            # 7-9
     lambda p, n: slide_part(p, n, "02", "PART 2 · DESIGN", "시연 및 설계", ["시나리오 · 시연(캡처)", "서비스 구성도 · 메뉴 구성", "ERD · 명세서 · API", "WBS · 유스케이스 · 워크플로우", "패키지 구조"], BLUE),   # 10
     slide_scenario, slide_demo_flow, slide_demo1, slide_demo2, slide_demo3,                   # 11-15
     slide_architecture, slide_menu, slide_erd, slide_spec_summary, slide_api,                 # 16-20
     slide_wbs, slide_usecase, slide_workflow, slide_packages,                                 # 21-24
     lambda p, n: slide_part(p, n, "03", "PART 3 · DELIVER", "구현 및 평가", ["개발 환경 · Git 전략", "핵심 구현 3가지", "테스트 · 트러블슈팅", "성과 · 한계 · 향후 확장"], INK),   # 25
-    slide_env, slide_git, slide_core1, slide_core2, slide_core3,                              # 26-30
-    slide_tests, slide_trouble, slide_result, slide_next,                                     # 31-34
-    slide_qna, slide_thanks,                                                                  # 35-36
+    slide_env, slide_git, slide_core_all,                                                     # 26-28
+    slide_tests, slide_trouble, slide_result, slide_next,                                     # 29-32
+    slide_qna, slide_thanks,                                                                  # 33-34
 ]
 
 
