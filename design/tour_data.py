@@ -69,6 +69,20 @@ LONG_NIGHTS = [6, 9, 13]      # 6시간 초과
 DOMESTIC_NIGHTS = [1, 2, 3]
 
 
+# 투어 여행사 추천 순위: 해외 추천 여행지(gen_data_sql.AGENCY_PICKS 와 같은 순서)의 투어를 앞에 두고, 국내 대표 도시를 이어 둔다.
+DEST_PICK_ORDER = ["로마", "삿포로", "케이프타운", "도쿄", "로스앤젤레스", "홍콩", "파리", "방콕", "싱가포르", "시드니", "호놀룰루",
+                   "바르셀로나", "다낭", "뉴욕", "런던", "이스탄불", "발리", "두바이"]
+DOMESTIC_PICK_ORDER = ["제주", "경주", "부산"]
+
+
+def tour_pick(place, theme, domestic):
+    """여행사 추천 순위(0 = 추천 아님). 여행지 순서 x 3테마 + 테마 순서로 겹치지 않게 만든다."""
+    idx = [FOOD, SPORTS, ART].index(theme)
+    if domestic:
+        return 60 + DOMESTIC_PICK_ORDER.index(place) * 3 + idx + 1 if place in DOMESTIC_PICK_ORDER else 0
+    return DEST_PICK_ORDER.index(place) * 3 + idx + 1 if place in DEST_PICK_ORDER else 0
+
+
 def h(s):
     return int(hashlib.md5(s.encode("utf-8")).hexdigest(), 16)
 
@@ -213,9 +227,12 @@ def emit(w, q, dest_id, dest_region, min_icn_minutes):
         tour_id = state["tour"]
         dest_sql = dest_id[dest] if dest else "NULL"
         city_sql = city_id[city] if city else "NULL"
-        w("INSERT INTO tour (scope, destination_id, city_id, theme, title, subtitle, collab_brand, highlights, includes, excludes, source_note, status, sort_order) VALUES "
+        pick = tour_pick(place, theme, domestic)
+        views = 300 + h(place + theme + "v") % 9000 + (12000 if pick else 0)
+        sales = 20 + h(place + theme + "s") % 600 + (900 if pick else 0)
+        w("INSERT INTO tour (scope, destination_id, city_id, theme, title, subtitle, collab_brand, highlights, includes, excludes, source_note, status, sort_order, view_count, sales_count, agency_pick) VALUES "
           f"({q(scope)}, {dest_sql}, {city_sql}, {q(theme)}, {q(title)}, {q(subtitle)}, {q(brand)}, {q(fit(highlights, 500))}, "
-          f"{q(includes_text(theme))}, {q(excludes_text(domestic))}, {q(fit('웹 조사 참고: ' + ', '.join(i['name'] for i in items[:3]) + ' (상품·브랜드는 가상)', 200))}, 'ON_SALE', {state['sort']});")
+          f"{q(includes_text(theme))}, {q(excludes_text(domestic))}, {q(fit('웹 조사 참고: ' + ', '.join(i['name'] for i in items[:3]) + ' (상품·브랜드는 가상)', 200))}, 'ON_SALE', {state['sort']}, {views}, {sales}, {pick});")
         depart = "역·터미널" if domestic else "공항"
         for nights in nights_list:
             state["option"] += 1
