@@ -5,6 +5,7 @@
 BCrypt 해시는 비밀번호 1234 를 미리 해시한 값이다. 바꾸려면 ADMIN_HASH / USER_HASH 를 교체한다.
 """
 import csv
+import hashlib
 import math
 import os
 import random
@@ -293,6 +294,13 @@ INQUIRIES = [
 ]
 
 
+# 여행사 추천 여행지(순위 1부터). 이달의 기획전·베스트셀러 여행지를 앞에 두고, 대표 인기 도시를 이어 둔다.
+AGENCY_PICKS = {
+    "로마": 1, "삿포로": 2, "케이프타운": 3, "도쿄": 4, "로스앤젤레스": 5, "홍콩": 6, "파리": 7, "방콕": 8, "싱가포르": 9,
+    "시드니": 10, "호놀룰루": 11, "바르셀로나": 12, "다낭": 13, "뉴욕": 14, "런던": 15, "이스탄불": 16, "발리": 17, "두바이": 18,
+}
+
+
 def q(v):
     if v is None:
         return "NULL"
@@ -371,11 +379,14 @@ def main():
     w("")
     w("-- [M] 여행지 %d개 (destination_id 는 1부터 순서대로)" % len(DESTINATIONS))
     for i, d in enumerate(DESTINATIONS):
+        # 조회수(시연용 초기값, 상세를 볼 때마다 늘어난다)와 여행사 추천 순위(0 = 추천 아님)
+        views = 1200 + int(hashlib.md5(d[0].encode("utf-8")).hexdigest(), 16) % 46000 + (30000 if d[0] in AGENCY_PICKS else 0)
+        pick = AGENCY_PICKS.get(d[0], 0)
         unavailable = d[0] == "블라디보스토크"
         c1, c2 = POSTER.get(d[0], (None, None))
-        w("INSERT INTO destination (name_ko, name_en, country_code, main_airport, latitude, longitude, status, unavailable_reason, summary, poster_color_from, poster_color_to, sort_order) VALUES "
+        w("INSERT INTO destination (name_ko, name_en, country_code, main_airport, latitude, longitude, status, unavailable_reason, summary, poster_color_from, poster_color_to, sort_order, view_count, agency_pick) VALUES "
           f"({q(d[0])}, {q(d[1])}, {q(d[2])}, {q(d[3])}, {d[4]}, {d[5]}, "
-          f"{q('UNAVAILABLE' if unavailable else 'AVAILABLE')}, {q(VVO_REASON if unavailable else None)}, {q(d[6])}, {q(c1)}, {q(c2)}, {i + 1});")
+          f"{q('UNAVAILABLE' if unavailable else 'AVAILABLE')}, {q(VVO_REASON if unavailable else None)}, {q(d[6])}, {q(c1)}, {q(c2)}, {i + 1}, {views}, {pick});")
     w("")
     w("-- [M] 항공사")
     for code, (ko, en, t) in AIRLINES.items():
