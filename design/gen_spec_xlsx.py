@@ -333,7 +333,7 @@ REQ = [
     ("@@REQ_NEW_NONFUNC@@",),
     ("비기능", "사용성", "ux-001", "반응형", "-", "모바일 화면 폭에서도 깨지지 않아야 한다.", "CSS 미디어 쿼리, 760px 이하 하단 탭 바. 390px 폭은 브라우저로 확인, 실기기 확인은 사용자 몫", "비기능", "중", "완료"),
     ("비기능", "사용성", "ux-002", "접근성", "-", "키보드로 캐로셀·카드를 조작할 수 있고, 동작 줄이기 설정을 존중해야 한다.", "prefers-reduced-motion", "비기능", "중", "완료"),
-    ("비기능", "품질", "qa-001", "테스트 코드", "-", "더미데이터 규칙, 조회·쓰기 기능, 권한, 결제·좌석 차감, 관리자 CRUD 를 자동 테스트로 검증해야 한다.", "161개 통과(11/21)", "비기능", "상", "완료"),
+    ("비기능", "품질", "qa-001", "테스트 코드", "-", "더미데이터 규칙, 조회·쓰기 기능, 권한, 결제·좌석 차감, 관리자 CRUD 를 자동 테스트로 검증해야 한다.", "169개 통과(11/22)", "비기능", "상", "완료"),
     ("비기능", "운영", "ops-001", "실행 환경", "-", "로컬은 H2, 운영은 MySQL 로 실행할 수 있어야 하고 접속 정보는 환경변수로 받아야 한다.", "local / mysql 프로필", "비기능", "중", "완료"),
 ]
 REQ = [r for x in REQ for r in (A.REQ_NEW if x == ("@@REQ_NEW@@",) else A.REQ_NEW_NONFUNC if x == ("@@REQ_NEW_NONFUNC@@",) else [x])]
@@ -700,7 +700,7 @@ RULES = [
     ("코드 컨벤션", "패키지", "기능(도메인) 단위: com.nadogam.{home, travel, globe, special, bestseller, tour, domestic, stay, cart, qr, support, popup, account, auth, admin, config, common}. 컨트롤러·조회 저장소·화면용 record 를 같은 도메인 패키지에 둔다."),
     ("코드 컨벤션", "화면용 값", "화면 표시 문자열(가격 ₩ 콤마, 시각, 소요시간, 좌석등급)은 record 의 메서드나 Fmt 에서 만든다. 템플릿에는 계산을 두지 않는다."),
     ("코드 컨벤션", "조회", "읽기 조회는 JdbcClient + record 로 작성하고, 정렬·필터 값은 화이트리스트로 검증해 SQL 에 직접 넣지 않는다. 쓰기 기능(계정·예약·문의 등)은 JPA 로 작성한다."),
-    ("코드 컨벤션", "테스트", "테스트 이름은 한글 문장으로 쓴다. 기능별 테스트 클래스(SeedData·Dashboard·TravelSearch·Login·Theme·Popup·Support·Tour·Domestic·Stay·Cart·CartFlight·SeatDeduction·Qr·AdminCatalog·AdminProductCrud·DestPhotos)로 나눈다. 161개."),
+    ("코드 컨벤션", "테스트", "테스트 이름은 한글 문장으로 쓴다. 기능별 테스트 클래스(SeedData·Dashboard·TravelSearch·Login·Theme·Popup·Support·Tour·Domestic·Stay·Cart·CartFlight·SeatDeduction·Qr·AdminCatalog·AdminProductCrud·DestPhotos 외)로 나눈다. 모두 169개(22개 클래스)."),
     ("커밋 컨벤션", "형식", "타입(범위): 제목 — 제목은 50자 안쪽 한국어, 마침표 없음. 본문은 무엇을·왜 바꿨는지. 한 커밋에는 한 가지 변경만 담는다."),
     ("커밋 컨벤션", "타입", "feat, fix, refactor, style, docs, test, chore 를 쓴다. 날짜·시각·파일 경로만 쓴 메시지는 쓰지 않는다."),
     ("브랜치", "전략", "main(안정), dev(통합), feature/*(기능별). feature 는 dev 에서 만들어 dev 로 합친다. main 에서 직접 개발하지 않는다."),
