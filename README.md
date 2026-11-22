@@ -10,7 +10,6 @@
 | [`design/`](design) | 기능정의서(`01`) · DB설계서(`02`) · 더미데이터설계서(`03`), ERD 이미지, 더미 데이터·명세서 생성 파이썬 스크립트 |
 | [`excel_output/`](excel_output) | 엑셀 명세서(요구·기능·화면·API·테이블)와 시트별 요약본(프로젝트 개요·WBS·트러블슈팅 포함) |
 | [`ppt_output/`](ppt_output) | 발표 PPT(`나도감_발표.pptx` / `.pdf`), 슬라이드 이미지(`나도감_발표/`), 구성안 |
-| [`code_convention/`](code_convention) | 코드·커밋 규칙, 패키지 구조 등 개발 규약 문서 |
 
 ## 명세 규모
 
