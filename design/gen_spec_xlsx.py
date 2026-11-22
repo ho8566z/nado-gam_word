@@ -87,7 +87,7 @@ def sheet_overview(wb):
     ws.title = "프로젝트 개요"
     sections = [
         ("주의사항", [
-            ("목적", "이 프로젝트는 취업을 위한 포트폴리오 용도로 만든 4차 개인 프로젝트(여행사 항공권 웹 서비스)이다."),
+            ("목적", "이 프로젝트는 취업을 위한 포트폴리오 용도로 만든 2차 개인 프로젝트(여행사 항공권 웹 서비스)이다."),
             ("가상 데이터", "모든 항공편·항공사·편명·가격은 실제 노선을 참고해 임의로 만든 가상 데이터이다. 항공사 브랜드도 실제와 무관한 가상 이름이다(예: 민국항공). 공항·도시·국가는 실제 지명을 쓴다."),
             ("범위", "이번 범위는 조회·예약까지다(메인, 해외 여행, 이달의 특별전, 베스트셀러, 투어, 국내여행, 호텔·크루즈, 장바구니·모의 결제·예약, QR, 고객문의, 이벤트 팝업, 계정, 관리자). 실제 결제·후기·동행 모집·날짜별 재고는 2단계이다."),
             ("기준일", "구현 상태는 2026-11-22 기준이다(기간 11/19~11/22). 상태 값: 완료 / 예정."),
@@ -151,7 +151,7 @@ def sheet_wbs(wb):
     last_col = first_day_col + len(days) - 1
 
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=last_col)
-    style(ws.cell(1, 1, "4차 프로젝트 WBS(Work Breakdown Structure)"), bold=True, fill=GRAY, align=CENTER, size=12)
+    style(ws.cell(1, 1, "2차 개인 프로젝트 WBS(Work Breakdown Structure)"), bold=True, fill=GRAY, align=CENTER, size=12)
 
     info = [
         (2, "프로젝트명", "nado-gam (나도 감) — 여행사 항공권 웹 서비스", "2026.11.19 - 2026.11.22"),

@@ -292,7 +292,7 @@ def slide_cover(prs, n=1):
     s = blank(prs, BG)
     rect(s, 0, 0, 0.5, H, fill=ACCENT)
     rect(s, 11.6, 1.8, 8.2, 8.2, fill=RGBColor(0xBD, 0xF0, 0xE8), shape=MSO_SHAPE.OVAL, noline=True)   # 지구본 뒤 은은한 원(글자보다 먼저 그린다)
-    pill(s, 1.6, 2.2, 3.6, 0.55, "PERSONAL PROJECT · 4TH", fill=DARK, size=14)
+    pill(s, 1.6, 2.2, 3.6, 0.55, "PERSONAL PROJECT · 2ND", fill=DARK, size=14)
     text(s, 1.5, 3.1, 9, 2.2, "나도 감", size=120, bold=True, color=INK)
     text(s, 1.6, 5.5, 9.8, 0.9, "nado-gam — 지구본으로 떠나는 여행사 웹 서비스", size=25, bold=True, color=ACCENT_INK)
     text(s, 1.6, 6.5, 9.2, 1.2, "가고 싶은 여행지를 고르면 항공편·투어·호텔·크루즈를 한 번에 담고, 비행 경로는 3D 지구본으로 보여 줍니다.",
@@ -1115,7 +1115,7 @@ def slide_thanks(prs, n):
     rect(s, 0, 0, 0.5, H, fill=ACCENT)
     text(s, 1.6, 3.4, 12, 2, "THANK YOU", size=96, bold=True, color=WHITE)
     text(s, 1.7, 5.6, 12, 0.9, "감사합니다", size=40, bold=True, color=ACCENT_LIGHT)
-    text(s, 1.7, 7.0, 12, 0.6, "나도 감 (nado-gam) — 4차 개인 프로젝트", size=20, color=RGBColor(0xC9, 0xCE, 0xDD))
+    text(s, 1.7, 7.0, 12, 0.6, "나도 감 (nado-gam) — 2차 개인 프로젝트", size=20, color=RGBColor(0xC9, 0xCE, 0xDD))
     text(s, 1.7, 7.7, 12, 0.6, "발표자 이윤호 · 2026년 11월 25일", size=18, color=RGBColor(0x9A, 0xA3, 0xBA))
     text(s, 1.7, 8.6, 14, 0.6, "github.com/ho8566z/nado-gam  ·  github.com/ho8566z/nado-gam_word", size=15, color=RGBColor(0x9A, 0xA3, 0xBA))
     footer(s, n, dark=True)
