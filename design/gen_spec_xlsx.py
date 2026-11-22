@@ -17,7 +17,7 @@ from openpyxl.utils import get_column_letter as L
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.normpath(os.path.join(HERE, "..", "excel_output", "나도감_명세서.xlsx"))
-SCHEMA = os.path.normpath(os.path.join(HERE, "..", "..", "nado_gam", "src", "main", "resources", "schema.sql"))
+SCHEMA = os.path.normpath(os.path.join(HERE, "..", "..", "nado-gam", "src", "main", "resources", "schema.sql"))
 
 FONT = "맑은 고딕"
 GRAY = PatternFill("solid", fgColor="D9D9D9")      # 머리글

@@ -18,7 +18,7 @@ from pptx.util import Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CAP = os.path.join(HERE, "captures")
-ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "nado_gam"))
+ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "nado-gam"))
 sys.path.insert(0, os.path.join(HERE, "..", "design"))
 TOTAL = 34
 

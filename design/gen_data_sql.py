@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""flight_dummy.csv 와 03_더미데이터설계서.md 의 값으로 nado_gam 의 data.sql 을 만든다.
+"""flight_dummy.csv 와 03_더미데이터설계서.md 의 값으로 nado-gam 의 data.sql 을 만든다.
 
-실행: python gen_data_sql.py  (같은 폴더의 CSV 를 읽어 ../../nado_gam/src/main/resources/data.sql 을 쓴다)
+실행: python gen_data_sql.py  (같은 폴더의 CSV 를 읽어 ../../nado-gam/src/main/resources/data.sql 을 쓴다)
 BCrypt 해시는 비밀번호 1234 를 미리 해시한 값이다. 바꾸려면 ADMIN_HASH / USER_HASH 를 교체한다.
 """
 import csv
@@ -14,7 +14,7 @@ import expand_data
 import tour_data
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.normpath(os.path.join(HERE, "..", "..", "nado_gam", "src", "main", "resources", "data.sql"))
+OUT = os.path.normpath(os.path.join(HERE, "..", "..", "nado-gam", "src", "main", "resources", "data.sql"))
 
 ADMIN_HASH = "$2a$10$/28dEnfkyY/xvDMFV71mqu8VARF0MC5jpDbh31V4cexP7PVMQD6l2"
 USER_HASH = "$2a$10$Hv5Dp9BXiWIzFmNLl29Kjey5Qofy/kCC8cY05NzmBUrWJWx2Y7IsW"
@@ -359,7 +359,7 @@ def main():
     out = []
     w = out.append
 
-    w("-- nado_gam 더미데이터. design/gen_data_sql.py 가 flight_dummy.csv 로 생성한 파일이다. 직접 고치지 말고 스크립트를 고친다.")
+    w("-- nado-gam 더미데이터. design/gen_data_sql.py 가 flight_dummy.csv 로 생성한 파일이다. 직접 고치지 말고 스크립트를 고친다.")
     w("-- 모든 항공편·편명·가격은 실제 노선을 참고한 가상 데이터이다.")
     w("")
     w("-- [A] 관리자 / [U] 사용자 계정 (비밀번호 1234 의 BCrypt 해시)")

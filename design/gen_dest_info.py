@@ -6,7 +6,7 @@ import json, os, re
 
 import dest_captions
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'nado_gam'))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'nado-gam'))
 SQL = os.path.join(ROOT, 'src', 'main', 'resources', 'data.sql')
 OUT = os.path.join(ROOT, 'src', 'main', 'resources', 'static', 'img', 'dest', 'info.json')
 

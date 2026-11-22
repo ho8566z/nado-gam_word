@@ -3,7 +3,7 @@
 
 - 주제는 tour_theme_subjects.py. 후보 문서를 앞에서부터 시도해 대표 이미지가 있는 첫 문서를 쓴다.
 - 여행지 전경 사진과 같은 파일이면 건너뛰고 다음 후보를 쓴다(왼쪽과 오른쪽이 같은 그림이 되지 않게).
-- 사진: nado_gam/src/main/resources/static/img/tour/tour-{투어번호}.jpg, 출처: 같은 폴더의 credits.json
+- 사진: nado-gam/src/main/resources/static/img/tour/tour-{투어번호}.jpg, 출처: 같은 폴더의 credits.json
 - fetch_dest_photos.py 와 같은 규칙(식별 가능한 일반 User-Agent, 요청 간격, 429 는 Retry-After 를 지키고 우회하지 않음)을 쓴다.
   이미 받은 파일은 건너뛰므로 다시 실행하면 못 받은 것만 이어받는다.
 사용: python fetch_tour_photos.py

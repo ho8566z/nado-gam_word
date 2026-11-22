@@ -3,14 +3,14 @@
 
 - 도시마다 대표 관광지 문서(LANDMARKS)의 대표 이미지를 쓰고, 이미지가 없으면 도시 문서의 이미지로 대신한다.
 - 실제로 내려받은 사진만 저장하고, 못 받은 도시는 결과에서 빠진다(카드는 기존 그라데이션 유지).
-- 사진 파일: nado_gam/src/main/resources/static/img/dest/{overseas|domestic}-{번호}.jpg
-- 출처·저작자·라이선스: nado_gam/src/main/resources/static/img/dest/credits.json (화면의 사진 출처 표기에 쓴다)
+- 사진 파일: nado-gam/src/main/resources/static/img/dest/{overseas|domestic}-{번호}.jpg
+- 출처·저작자·라이선스: nado-gam/src/main/resources/static/img/dest/credits.json (화면의 사진 출처 표기에 쓴다)
 - Wikimedia 정책에 따라 식별 가능한 User-Agent 를 쓰고 요청 사이에 간격을 둔다. 이미 받은 파일은 건너뛰므로 다시 실행해도 된다.
 사용: python fetch_dest_photos.py
 """
 import json, os, re, sys, time, urllib.parse, urllib.request, urllib.error
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'nado_gam'))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'nado-gam'))
 OUT = os.path.join(ROOT, 'src', 'main', 'resources', 'static', 'img', 'dest')
 UA = 'nado-gam-student-project/1.0 (educational portfolio project; low-rate photo fetch)'  # 개인 연락처는 넣지 않는다
 THUMB = 960  # Wikimedia 표준 썸네일 폭
