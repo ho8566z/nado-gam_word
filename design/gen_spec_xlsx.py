@@ -2,7 +2,7 @@
 """'나도 감' 명세서 엑셀을 만든다. 형식은 excel_sample 의 '명세서 목록' 통합 문서를 따른다.
 
 실행: python gen_spec_xlsx.py   →  ../excel_output/나도감_명세서.xlsx
-- 테이블 명세서는 nado_gam 의 schema.sql 을 읽어서 만든다(구조는 항상 실제 DDL 과 같다).
+- 테이블 명세서는 nado-gam 의 schema.sql 을 읽어서 만든다(구조는 항상 실제 DDL 과 같다).
 - 나머지 시트의 내용은 이 파일에 적혀 있다. 구현 상태는 2026-11-22 기준이다(테스트 169개 통과).
 """
 import datetime as dt
@@ -93,7 +93,7 @@ def sheet_overview(wb):
             ("기준일", "구현 상태는 2026-11-22 기준이다(기간 11/19~11/22). 상태 값: 완료 / 예정."),
         ]),
         ("프로젝트 목표", [
-            ("서비스 이름", "nado_gam (나도 감) — '나도 갈래!'라는 뜻의 여행사 웹 서비스"),
+            ("서비스 이름", "nado-gam (나도 감) — '나도 갈래!'라는 뜻의 여행사 웹 서비스"),
             ("한 줄 소개", "가고 싶은 여행지를 고르면 갈 수 있는 출발지와 항공편·투어·호텔·크루즈를 보여주고, 비행 경로를 지구본으로 보여준다. 장바구니와 모의 결제로 예약까지 이어진다."),
             ("차별점", "① 가운데에서 도는 지구본과 비행 경로 시각화 ② 여행지를 먼저 고르면 그 여행지로 가는 출발지만 보여주는 흐름 ③ 직항·경유 선택과 정렬 ④ 이달의 특별전·베스트셀러 포스터 카드 ⑤ 도시별 대표 관광지 사진과 명소·특산 카드 ⑥ 투어·국내여행·호텔·크루즈를 장바구니에 담아 모의 결제하고 QR 로 예약 확인"),
             ("벤치마킹", "하나투어, 모두투어, 트립닷컴, 놀유니버스(NOL) 사이트를 브라우저로 조사했다. 한국 여행사 3곳은 Next.js 기반이고, 트립닷컴은 React 기반이다. 놀유니버스 채용 공고에서 Java·Kotlin·Spring Boot 백엔드를 확인했다."),
@@ -114,13 +114,13 @@ def sheet_overview(wb):
             ("프론트엔드", "Thymeleaf(서버 렌더링), HTML/CSS/JavaScript(라이트 테마, 반응형), globe.gl(지구본), 대표 관광지 사진은 Wikipedia·Wikimedia Commons(출처 표기)"),
             ("DB", "로컬 H2(MySQL 모드), 운영 MySQL 8 (mysql 프로필, 접속 정보는 환경변수)"),
             ("빌드·테스트", "Gradle 9.8.2, JUnit 5 / Spring Boot Test (테스트 169개)"),
-            ("협업·형상", "Git, GitHub (ho8566z/nado_gam, ho8566z/nado_gam_word). dev / feature 브랜치로 나눠 개발"),
+            ("협업·형상", "Git, GitHub (ho8566z/nado-gam, ho8566z/nado-gam_word). dev / feature 브랜치로 나눠 개발"),
             ("개발 환경", "IntelliJ, VS Code, Chrome(화면 확인)"),
             ("2단계(예정)", "날짜별 재고와 동시성 제어(낙관적 락·100명 동시 예약 테스트), 실제 결제 연동, '나도 감' 동행 모집, 후기·찜, Redis 캐시, k6 부하 테스트, GitHub Actions + Docker 배포"),
         ]),
         ("산출물 위치", [
-            ("코드 레포", "nado_gam (src/main, src/test)"),
-            ("문서 레포", "nado_gam_word (design/ 마크다운 설계서 3개, 항공편 더미 CSV, SQL 생성 스크립트, excel_output/ 이 명세서)"),
+            ("코드 레포", "nado-gam (src/main, src/test)"),
+            ("문서 레포", "nado-gam_word (design/ 마크다운 설계서 3개, 항공편 더미 CSV, SQL 생성 스크립트, excel_output/ 이 명세서)"),
         ]),
     ]
     r = 1
@@ -154,7 +154,7 @@ def sheet_wbs(wb):
     style(ws.cell(1, 1, "4차 프로젝트 WBS(Work Breakdown Structure)"), bold=True, fill=GRAY, align=CENTER, size=12)
 
     info = [
-        (2, "프로젝트명", "nado_gam (나도 감) — 여행사 항공권 웹 서비스", "2026.11.19 - 2026.11.22"),
+        (2, "프로젝트명", "nado-gam (나도 감) — 여행사 항공권 웹 서비스", "2026.11.19 - 2026.11.22"),
         (3, "담당", "이윤호 (개인 프로젝트)", "11월"),
     ]
     for row, k, v, period in info:
@@ -656,7 +656,7 @@ def sheet_tables(wb):
     title(ws, "테이블 명세서", 8)
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=8)
     style(ws.cell(2, 1, "공통 규칙 / MySQL 8, InnoDB, 문자셋 utf8mb4. 영역: [A] 관리자 / [U] 사용자 / [M] 운영 마스터. 관리자·사용자 계정은 같은 테이블에 두지 않는다. "
-                        "비밀번호는 BCrypt 해시(60자). 이 시트는 nado_gam 의 schema.sql 에서 자동 생성했다. 날짜별 재고(flight_schedule)·동행 모집·후기는 2단계."), fill=LIGHT)
+                        "비밀번호는 BCrypt 해시(60자). 이 시트는 nado-gam 의 schema.sql 에서 자동 생성했다. 날짜별 재고(flight_schedule)·동행 모집·후기는 2단계."), fill=LIGHT)
     r = 4
     for name, cols, multi_uk in tables:
         ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=8)
